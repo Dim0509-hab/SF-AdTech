@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Дашборд с перенаправлением по роли
     Route::get('/dashboard', function () {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
         if ($user->role === 'admin') {

@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Offer;
+use App\Models\Role;
 
 /**
  * Контроллер для административной панели SF-AdTech.
- *
+ * @property \App\Models\User $user
  * Управление пользователями, офферами и системной статистикой.
  */
 class AdminController extends Controller

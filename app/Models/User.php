@@ -4,6 +4,16 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $role
+ * @property bool $active
+ */
+
+
 class User extends Authenticatable {
     use HasFactory;
     protected $fillable = ['name','email','password','role','active'];
