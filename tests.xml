@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\AdminAccessTest" file="C:\Skills\SF\tests\Feature\AdminAccessTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.225594">
+    <testcase name="testAdminCanAccessAdminDashboard" file="C:\Skills\SF\tests\Feature\AdminAccessTest.php" line="10" class="Tests\Feature\AdminAccessTest" classname="Tests.Feature.AdminAccessTest" assertions="0" time="0.187645">
+      <error type="Illuminate\Database\QueryException">Tests\Feature\AdminAccessTest::testAdminCanAccessAdminDashboard&#13;
+Illuminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: insert into "users" ("name", "email", "email_verified_at", "password", "remember_token", "role", "active", "updated_at", "created_at") values (Sage Cummings, howell.schultz@example.org, 2025-10-24 03:52:47, $2y$04$dO5RFbzKydArKyIlolHxxOBG1q8SGLyFA1UDJ.v.0NdTzkzYGvsDO, S3Z61B70iP, admin, 1, 2025-10-24 03:52:47, 2025-10-24 03:52:47))
+&#13;
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:523
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3853
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+C:\Skills\SF\tests\Feature\AdminAccessTest.php:12</error>
+    </testcase>
+    <testcase name="testAdvertiserCannotAccessAdminDashboard" file="C:\Skills\SF\tests\Feature\AdminAccessTest.php" line="21" class="Tests\Feature\AdminAccessTest" classname="Tests.Feature.AdminAccessTest" assertions="0" time="0.013155">
+      <error type="Illuminate\Database\QueryException">Tests\Feature\AdminAccessTest::testAdvertiserCannotAccessAdminDashboard&#13;
+Illuminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: insert into "users" ("name", "email", "email_verified_at", "password", "remember_token", "role", "active", "updated_at", "created_at") values (Christian Quitzon, bianka83@example.com, 2025-10-24 03:52:47, $2y$04$dO5RFbzKydArKyIlolHxxOBG1q8SGLyFA1UDJ.v.0NdTzkzYGvsDO, H3ACzUKFeH, advertiser, 1, 2025-10-24 03:52:47, 2025-10-24 03:52:47))
+&#13;
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:523
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3853
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+C:\Skills\SF\tests\Feature\AdminAccessTest.php:23</error>
+    </testcase>
+    <testcase name="testWebmasterCannotAccessAdminDashboard" file="C:\Skills\SF\tests\Feature\AdminAccessTest.php" line="32" class="Tests\Feature\AdminAccessTest" classname="Tests.Feature.AdminAccessTest" assertions="0" time="0.012051">
+      <error type="Illuminate\Database\QueryException">Tests\Feature\AdminAccessTest::testWebmasterCannotAccessAdminDashboard&#13;
+Illuminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: insert into "users" ("name", "email", "email_verified_at", "password", "remember_token", "role", "active", "updated_at", "created_at") values (Halie Feest, marlene42@example.net, 2025-10-24 03:52:47, $2y$04$dO5RFbzKydArKyIlolHxxOBG1q8SGLyFA1UDJ.v.0NdTzkzYGvsDO, VD2ZIlYpZf, webmaster, 1, 2025-10-24 03:52:47, 2025-10-24 03:52:47))
+&#13;
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:523
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3853
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+C:\Skills\SF\tests\Feature\AdminAccessTest.php:34</error>
+    </testcase>
+    <testcase name="testInactiveUserCannotAccessDashboard" file="C:\Skills\SF\tests\Feature\AdminAccessTest.php" line="43" class="Tests\Feature\AdminAccessTest" classname="Tests.Feature.AdminAccessTest" assertions="0" time="0.012742">
+      <error type="Illuminate\Database\QueryException">Tests\Feature\AdminAccessTest::testInactiveUserCannotAccessDashboard&#13;
+Illuminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: insert into "users" ("name", "email", "email_verified_at", "password", "remember_token", "role", "active", "updated_at", "created_at") values (Obie Jenkins, lourdes12@example.net, 2025-10-24 03:52:47, $2y$04$dO5RFbzKydArKyIlolHxxOBG1q8SGLyFA1UDJ.v.0NdTzkzYGvsDO, TD0mb7gU3G, user, 0, 2025-10-24 03:52:47, 2025-10-24 03:52:47))
+&#13;
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:778
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Connection.php:523
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3853
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+C:\Skills\SF\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+C:\Skills\SF\tests\Feature\AdminAccessTest.php:45</error>
+    </testcase>
+  </testsuite>
+</testsuites>

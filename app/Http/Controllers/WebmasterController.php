@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Offer;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Role;
+
 
 class WebmasterController extends Controller {
     public function index(){ $offers = Offer::where('active',1)->withCount('webmasters')->get(); $subs = Auth::user()->subscriptions()->pluck('offer_id')->toArray(); return view('webmaster.offers.index', compact('offers','subs')); }

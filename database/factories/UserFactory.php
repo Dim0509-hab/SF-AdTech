@@ -29,16 +29,48 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => 'user', // значение по умолчанию
+            'active' => true,
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Create a user with admin role.
      */
-    public function unverified(): static
+    public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Create a user with advertiser role.
+     */
+    public function advertiser(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'advertiser',
+        ]);
+    }
+
+    /**
+     * Create a user with webmaster role.
+     */
+    public function webmaster(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'webmaster',
+        ]);
+    }
+
+    /**
+     * Create an inactive user.
+     */
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'active' => false,
         ]);
     }
 }

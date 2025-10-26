@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Middleware\TrustHosts as Middleware;
+use App\Models\Role;
 
 class TrustHosts extends Middleware
 {

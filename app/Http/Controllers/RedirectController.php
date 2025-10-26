@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Click;
 use Illuminate\Support\Facades\DB;
+use App\Models\Role;
+
 
 class RedirectController extends Controller {
     public function redirect(Request $request, $token){
