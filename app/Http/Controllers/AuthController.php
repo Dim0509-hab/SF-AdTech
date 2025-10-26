@@ -22,24 +22,33 @@ class AuthController extends Controller
 
    public function register(Request $r)
 {
-    $r->validate([
+    // 1. Валидация входных данных
+    $validated = $r->validate([
         'name' => 'required',
         'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6'
+        'password' => 'required|min:6',
+        'role' => 'required|in:advertiser,webmaster',
     ]);
 
-    // Создаем пользователя и сразу указываем роль
+    // 2. Получаем роль из таблицы roles по строковому имени
+    $role = Role::where('name', $validated['role'])->firstOrFail();
+
+    // 3. Создаём пользователя
     $user = User::create([
-        'name' => $r->name,
-        'email' => $r->email,
-        'password' => Hash::make($r->password),
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
         'active' => 1,
-        'role' => 'webmaster' // Здесь указываем роль напрямую
+        'role' => $validated['role'],      // строка: 'advertiser' / 'webmaster'
+        'role_id' => $role->id,       // число: ID из таблицы roles
     ]);
 
     Auth::login($user);
     return $this->afterLoginRedirect($user);
 }
+
+
+
 
 
     public function login(Request $r)
@@ -85,7 +94,7 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
             break;
         case 'advertiser':
-            return redirect()->route('advertiser.offers.index');
+            return redirect()->route('advertiser.offers');
             break;
         default:
             return redirect()->route('webmaster.offers.index');

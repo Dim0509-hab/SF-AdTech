@@ -18,27 +18,27 @@ class AdvertiserController extends Controller
     if (Auth::user()->role !== 'advertiser') {
         abort(403, 'Доступ запрещён');
     }
-}
+    }
 
 
-public function __construct()
+    public function __construct()
 {
     $this->middleware(function ($request, $next) {
         $this->authorizeUser();
         return $next($request);
     });
-}
+    }
 
 
     /**
      * Главная страница рекламодателя
      */
 
-public function index()
+    public function index()
 {
     $offers = Offer::all(); // или ваша логика получения офферов
     return view('advertiser.offers.index', ['offers' => $offers]);
-}
+    }
 
     /**
      * Список офферов рекламодателя
@@ -89,7 +89,7 @@ public function index()
             ]);
 
             return redirect()
-                ->route('advertiser.offers.index')
+                ->route('advertiser.offers')
                 ->with('success', 'Оффер успешно создан!');
         } catch (\Exception $e) {
             return back()
@@ -112,15 +112,25 @@ public function index()
         $offer->delete();
 
         return redirect()
-            ->route('advertiser.offers.index')
+            ->route('advertiser.offers')
             ->with('success', 'Оффер успешно удалён!');
     } catch (\Exception $e) {
        return back()
-    ->withErrors(['error' => 'Произошла ошибка при удалении оффера']) // массив в квадратных скобках
+    ->withErrors(['error' => 'Произошла ошибка при удалении оффера'])
     ->withInput();
 
     }
-}
+    }
+
+    public function stats($offerId)
+    {
+      // Логика получения статистики
+      // Например:
+      $offer = Offer::findOrFail($offerId);
+      $stats = $offer->getStats(); // ваша логика получения статистики
+
+      return view('advertiser.offers.stats', compact('offer', 'stats'));
+    }
 
 }
 

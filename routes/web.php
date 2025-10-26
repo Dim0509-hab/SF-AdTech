@@ -31,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'advertiser') {
-            return redirect()->route('advertiser.offers.index');
+            return redirect()->route('advertiser.offers');
         } else {
             return redirect()->route('webmaster.offers.index');
         }
@@ -39,12 +39,15 @@ Route::middleware(['auth'])->group(function () {
 
     // === Рекламодатель ===
     Route::prefix('advertiser')->group(function () {
-        Route::get('/offers', [AdvertiserController::class, 'index'])->name('advertiser.offers.index');
-        Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.offers.create');
-        Route::post('/offers', [AdvertiserController::class, 'store'])->name('advertiser.offers.store');
-        Route::post('/offers/{id}/deactivate', [AdvertiserController::class, 'deactivate'])->name('advertiser.offers.deactivate');
-        Route::get('/offers/{id}/stats', [AdvertiserController::class, 'stats'])->name('advertiser.offers.stats');
+    Route::get('/offers', [AdvertiserController::class, 'index'])->name('advertiser.offers');
+    Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.offers.create');
+    Route::post('/offers', [AdvertiserController::class, 'store'])->name('advertiser.offers.store');
+    Route::delete('/offers/{id}', [AdvertiserController::class, 'destroy'])->name('advertiser.offers.destroy');
+    Route::get('/offers/{id}/stats', [AdvertiserController::class, 'stats'])->name('advertiser.offers.stats');
+    Route::get('/advertiser/offers', [AdvertiserController::class, 'index'])->name('advertiser.offers.index');
+
     });
+
 
     // === Вебмастер ===
     Route::prefix('webmaster')->group(function () {

@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'role_id',
         'active'
     ];
 
@@ -67,6 +68,12 @@ class User extends Authenticatable
     public function isAdvertiser()
     {
         return $this->role === self::ROLE_ADVERTISER;
+    }
+
+
+    public function role()
+    {
+       return $this->belongsTo(Role::class);
     }
 
     public function isWebmaster()

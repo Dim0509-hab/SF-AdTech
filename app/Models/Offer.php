@@ -14,7 +14,7 @@ class Offer extends Model
         'name',
         'price',
         'target_url',
-        'themes', // изменено с 'topics' на 'themes'
+        'themes',
         'active'
     ];
 
@@ -43,4 +43,27 @@ class Offer extends Model
     {
         return $this->hasMany(Click::class);
     }
+    /**
+     * Получить статистику для оффера
+     */
+    public function getStats()
+    {
+        // Пример реализации (адаптируйте под свою логику)
+        return [
+            'views' => $this->views()->count(),
+            'clicks' => $this->clicks()->count(),
+            'conversions' => $this->conversions()->count(),
+            'revenue' => $this->conversions()->sum('amount'),
+        ];
+    }
+    public function views()
+    {
+       return $this->hasMany(\App\Models\View::class, 'offer_id', 'id');
+    }
+    public function conversions()
+    {
+    return $this->hasMany(\App\Models\Conversion::class, 'offer_id', 'id');
+    }
+
+
 }
