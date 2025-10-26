@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Offer;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Контроллер для административной панели SF-AdTech.
@@ -23,11 +24,23 @@ class AdminController extends Controller
      *
      * Разделение вызовов middleware помогает IDE корректно распознавать методы.
      */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('role:admin');
+
+
+    protected function authorizeUser()
+{
+    if (Auth::user()->role !== 'admin') {
+        abort(403, 'Доступ запрещён');
     }
+}
+
+public function __construct()
+{
+    $this->middleware(function ($request, $next) {
+        $this->authorizeUser();
+        return $next($request);
+    });
+}
+
 
     /**
      * Главная страница админки.

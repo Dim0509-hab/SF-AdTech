@@ -14,32 +14,31 @@ class AdvertiserController extends Controller
      * Метод для проверки прав доступа
      */
     protected function authorizeUser()
-    {
-        // Временное отключение проверки роли
-        // $userRole = Auth::user()->role;
-        // if ($userRole !== 'advertiser') {
-        //     abort(403, 'Доступ запрещен');
-        // }
+{
+    if (Auth::user()->role !== 'advertiser') {
+        abort(403, 'Доступ запрещён');
     }
+}
 
-    /**
-     * Конструктор контроллера
-     */
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            $this->authorizeUser();
-            return $next($request);
-        });
-    }
+
+public function __construct()
+{
+    $this->middleware(function ($request, $next) {
+        $this->authorizeUser();
+        return $next($request);
+    });
+}
+
 
     /**
      * Главная страница рекламодателя
      */
-    public function index()
-    {
-        return view('advertiser.dashboard');
-    }
+
+public function index()
+{
+    $offers = Offer::all(); // или ваша логика получения офферов
+    return view('advertiser.offers.index', ['offers' => $offers]);
+}
 
     /**
      * Список офферов рекламодателя
@@ -90,7 +89,7 @@ class AdvertiserController extends Controller
             ]);
 
             return redirect()
-                ->route('advertiser.offers')
+                ->route('advertiser.offers.index')
                 ->with('success', 'Оффер успешно создан!');
         } catch (\Exception $e) {
             return back()
@@ -98,4 +97,31 @@ class AdvertiserController extends Controller
                 ->withInput();
         }
     }
+
+    public function destroy(Request $request, $id)
+{
+    try {
+        $offer = Offer::findOrFail($id);
+
+        // Проверяем, что оффер принадлежит рекламодателю
+        if ($offer->advertiser_id !== Auth::id()) {
+            abort(403, 'Доступ запрещён');
+        }
+
+        // Можно использовать мягкое удаление
+        $offer->delete();
+
+        return redirect()
+            ->route('advertiser.offers.index')
+            ->with('success', 'Оффер успешно удалён!');
+    } catch (\Exception $e) {
+       return back()
+    ->withErrors(['error' => 'Произошла ошибка при удалении оффера']) // массив в квадратных скобках
+    ->withInput();
+
+    }
 }
+
+}
+
+

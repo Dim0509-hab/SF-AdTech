@@ -9,17 +9,17 @@ class Offer extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+     protected $fillable = [
         'advertiser_id',
         'name',
         'price',
         'target_url',
-        'topics',
-        'active',
+        'themes', // изменено с 'topics' на 'themes'
+        'active'
     ];
 
     protected $casts = [
-        'topics' => 'array',
+        'themes' => 'array',
         'price' => 'decimal:2',
         'active' => 'boolean',
     ];
