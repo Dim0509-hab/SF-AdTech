@@ -5,6 +5,14 @@ use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\WebmasterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\OfferController;
+
+Route::middleware('role:advertiser')->group(function () {
+    Route::get('/advertiser/offers', [OfferController::class, 'index'])->name('advertiser.offers');
+    Route::post('/advertiser/offers/{id}/deactivate', [OfferController::class, 'deactivate'])->name('advertiser.offers.deactivate');
+    Route::get('/advertiser/offers/{id}/stats', [OfferController::class, 'stats'])->name('advertiser.offers.stats');
+});
+
 
 
 // Главная

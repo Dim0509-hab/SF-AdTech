@@ -6,15 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Conversion extends Model
 {
+    protected $table = 'conversions'; // имя таблицы в БД
+
     protected $fillable = [
         'offer_id',
-        'amount',
-        // другие поля вашей таблицы conversions
+        'webmaster_id',
+        'amount',     // сумма конверсии
+        // другие поля
     ];
 
-    // Отношение обратно к Offer (опционально)
+    // Связь с оффером
     public function offer()
     {
-        return $this->belongsTo(\App\Models\Offer::class, 'offer_id', 'id');
+        return $this->belongsTo(Offer::class);
     }
 }

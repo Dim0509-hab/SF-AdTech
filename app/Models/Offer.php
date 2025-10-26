@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Subscription;
 
 class Offer extends Model
 {
@@ -63,6 +64,10 @@ class Offer extends Model
     public function conversions()
     {
     return $this->hasMany(\App\Models\Conversion::class, 'offer_id', 'id');
+    }
+        public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
     }
 
 
