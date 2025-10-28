@@ -94,7 +94,7 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
             break;
         case 'advertiser':
-            return redirect()->route('advertiser.offers');
+            return redirect()->route('advertiser.offers.index');
             break;
         default:
             return redirect()->route('webmaster.offers.index');

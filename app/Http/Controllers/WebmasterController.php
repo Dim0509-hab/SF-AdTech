@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Offer;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Role;
+
 
 
 class WebmasterController extends Controller {

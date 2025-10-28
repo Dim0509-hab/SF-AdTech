@@ -34,24 +34,14 @@ class AdvertiserController extends Controller
      * Главная страница рекламодателя
      */
 
-    public function index()
+   public function index()
 {
-    $offers = Offer::all(); // или ваша логика получения офферов
-    return view('advertiser.offers.index', ['offers' => $offers]);
-    }
-
-    /**
-     * Список офферов рекламодателя
-     */
-    public function offers()
-    {
-        $offers = Offer::where('advertiser_id', Auth::id())
-            ->paginate(10);
-
-        return view('advertiser.offers.index', compact('offers'));
-    }
-
-    /**
+    $offers = Offer::where('advertiser_id', Auth::id())
+        ->withCount('webmasters')
+        ->paginate(10);
+    return view('advertiser.offers.index', compact('offers'));
+}
+/**
      * Форма создания оффера
      */
     public function create()
@@ -59,78 +49,73 @@ class AdvertiserController extends Controller
         return view('advertiser.offers.create');
     }
 
-    /**
-     * Сохранение нового оффера
-     */
-    public function store(Request $request)
-    {
-        // Валидация входных данных
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0.01',
-            'target_url' => 'required|url|active_url',
-            'themes' => 'array|nullable'
-        ]);
-
-        if ($validator->fails()) {
-            return back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        try {
-            Offer::create([
-                'advertiser_id' => Auth::id(),
-                'name' => $request->name,
-                'price' => $request->price,
-                'target_url' => $request->target_url,
-                'themes' => $request->themes ?? [],
-                'active' => true,
-            ]);
-
-            return redirect()
-                ->route('advertiser.offers')
-                ->with('success', 'Оффер успешно создан!');
-        } catch (\Exception $e) {
-            return back()
-                ->withErrors(['error' => 'Произошла ошибка при создании оффера'])
-                ->withInput();
-        }
-    }
-
-    public function destroy(Request $request, $id)
+public function store(Request $request)
 {
-    try {
-        $offer = Offer::findOrFail($id);
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0.01',
+        'target_url' => 'required|url|active_url',
+        'themes' => 'array|nullable'
+    ]);
 
-        // Проверяем, что оффер принадлежит рекламодателю
-        if ($offer->advertiser_id !== Auth::id()) {
-            abort(403, 'Доступ запрещён');
-        }
-
-        // Можно использовать мягкое удаление
-        $offer->delete();
-
-        return redirect()
-            ->route('advertiser.offers')
-            ->with('success', 'Оффер успешно удалён!');
-    } catch (\Exception $e) {
-       return back()
-    ->withErrors(['error' => 'Произошла ошибка при удалении оффера'])
-    ->withInput();
-
-    }
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
     }
 
-    public function stats($offerId)
-    {
-      // Логика получения статистики
-      // Например:
-      $offer = Offer::findOrFail($offerId);
-      $stats = $offer->getStats(); // ваша логика получения статистики
+    Offer::create([
+        'advertiser_id' => Auth::id(),
+        'name' => $request->name,
+        'price' => $request->price,
+        'target_url' => $request->target_url,
+        'themes' => $request->input('themes', []),
+        'active' => true,
+    ]);
 
-      return view('advertiser.offers.stats', compact('offer', 'stats'));
-    }
+    return redirect()
+        ->route('advertiser.offers.index')
+        ->with('success', 'Оффер создан!');
+}
+
+public function destroy($id)
+{
+    $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($id);
+    $offer->delete();
+
+    return redirect()
+        ->route('advertiser.offers.index')
+        ->with('success', 'Оффер удалён!');
+}
+
+public function stats($offerId)
+{
+    $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($offerId);
+    $stats = $offer->getStats(); // ваша логика
+
+    return view('advertiser.offers.stats', compact('offer', 'stats'));
+}
+
+public function deactivateOffer($id)
+{
+    $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($id);
+    $offer->update(['active' => false]);
+
+    return redirect()
+        ->route('advertiser.offers.index')
+        ->with('success', 'Оффер деактивирован');
+}
+public function activateOffer($id)
+{
+    $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($id);
+
+    $offer->update(['active' => true]);
+
+    return redirect()
+        ->route('advertiser.offers.index')
+        ->with('success', 'Оффер успешно активирован');
+}
+
+
+
 
 }
 
