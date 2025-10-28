@@ -6,6 +6,8 @@ use App\Http\Controllers\WebmasterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\OfferController;
+use Illuminate\Support\Facades\Auth;
+
 
 Route::middleware('role:advertiser')->group(function () {
     Route::get('/advertiser/offers', [OfferController::class, 'index'])->name('advertiser.offers');
@@ -33,10 +35,9 @@ Route::middleware(['auth'])->group(function () {
     // Дашборд с перенаправлением по роли
     Route::get('/dashboard', function () {
         /** @var \App\Models\User $user */
-        $user = auth()->user();
+        $user = Auth::user();
 
-
-        if ($user->role === 'admin') {
+    if ($user && $user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'advertiser') {
             return redirect()->route('advertiser.offers');

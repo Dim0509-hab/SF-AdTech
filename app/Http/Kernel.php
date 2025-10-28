@@ -47,5 +47,7 @@ class Kernel extends HttpKernel
     'role' => \App\Http\Middleware\RoleMiddleware::class,
     'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
     'redirect.role' => \App\Http\Middleware\RedirectByRole::class, // ✅ Новое
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'role:advertiser' => \App\Http\Middleware\AdvertiserMiddleware::class,
 ];
 }
