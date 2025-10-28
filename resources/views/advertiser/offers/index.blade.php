@@ -33,18 +33,6 @@
     </table>
 @endsection
 
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }} [Выведено в index.blade.php]
-    </div>
-@endif
-
-
-@if ($errors->any())
-    <div class="alert alert-danger">
-        {{ $errors->first() }}
-    </div>
-@endif
 
 @if($offers->isEmpty())
     <p>Офферов пока нет</p>
