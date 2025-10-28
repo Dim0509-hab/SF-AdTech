@@ -41,7 +41,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.offers.create');
         Route::post('/offers', [AdvertiserController::class, 'store'])->name('advertiser.offers.store');
         Route::delete('/offers/{id}', [AdvertiserController::class, 'destroy'])->name('advertiser.offers.destroy');
-        Route::get('/offers/{id}/stats', [AdvertiserController::class, 'stats'])->name('advertiser.offers.stats');
+        Route::get('/offers/{id}/stats', [AdvertiserController::class, 'stats'])
+            ->name('advertiser.offers.stats')
+            ->where('period', 'day|month|year');
         Route::post('/offers/{id}/activate', [AdvertiserController::class, 'activateOffer'])
         ->name('advertiser.offers.activate');
 
