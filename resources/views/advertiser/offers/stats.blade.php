@@ -11,19 +11,44 @@
 </head>
 <body class="bg-light">
     <div class="container mt-4">
-        <!-- Шапка страницы -->
-        <div class="row mb-4">
-            <div class="col-12">
+        <!-- Шапка страницы и селектор периода -->
+        <div class="row mb-4 align-items-center">
+            <div class="col-auto">
                 <h1 class="display-6 text-primary">
                     <i class="bi bi-graph-up"></i>
                     Статистика оффера "{{ $offer->name }}"
                 </h1>
-                <p class="text-muted">Оффер №{{ $offer->id }} | Период: текущий</p>
+            </div>
+            <div class="col">
+                <!-- Селектор периода -->
+                <div class="btn-group" role="group" aria-label="Выбор периода">
+                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'day']) }}"
+                       class="btn btn-sm {{ $period === 'day' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-calendar-day"></i> За день
+                    </a>
+                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'month']) }}"
+                       class="btn btn-sm {{ $period === 'month' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-calendar-month"></i> За месяц
+                    </a>
+                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'year']) }}"
+                       class="btn btn-sm {{ $period === 'year' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        <i class="bi bi-calendar-year"></i> За год
+                    </a>
+                </div>
             </div>
         </div>
 
+        <p class="text-muted mb-4">Оффер №{{ $offer->id }} | Период:
+            <strong>
+                @switch($period)
+                    @case('day') Сегодня @break
+                    @case('month') Текущий месяц @break
+                    @case('year') Текущий год @break
+                @endswitch
+            </strong>
+        </p>
 
-        <!-- Карточки с основными метриками -->
+        <!-- Карточки метрик -->
         @if($stats)
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
                 <!-- Просмотры -->
@@ -32,7 +57,9 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <i class="bi bi-eye fs-4 text-primary"></i>
-                                <span class="badge bg-primary rounded-pill px-3">{{ number_format($stats['views'], 0, ' ', ' ') }}</span>
+                                <span class="badge bg-primary rounded-pill px-3">
+                                    {{ number_format($stats['views'], 0, ' ', ' ') }}
+                                </span>
                             </div>
                             <h5 class="card-title text-muted">Просмотры</h5>
                         </div>
@@ -46,7 +73,9 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <i class="bi bi-mouse fs-4 text-success"></i>
-                                <span class="badge bg-success rounded-pill px-3">{{ number_format($stats['clicks'], 0, ' ', ' ') }}</span>
+                                <span class="badge bg-success rounded-pill px-3">
+                                    {{ number_format($stats['clicks'], 0, ' ', ' ') }}
+                                </span>
                             </div>
                             <h5 class="card-title text-muted">Клики</h5>
                         </div>
@@ -55,11 +84,13 @@
 
                 <!-- Конверсии -->
                 <div class="col">
-                    <div class="card border-warning shadow-sm h-1Desktop-100">
+                    <div class="card border-warning shadow-sm h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <i class="bi bi-check-circle fs-4 text-warning"></i>
-                                <span class="badge bg-warning text-dark rounded-pill px-3">{{ number_format($stats['conversions'], 0, ' ', ' ') }}</span>
+                                <span class="badge bg-warning text-dark rounded-pill px-3">
+                                    {{ number_format($stats['conversions'], 0, ' ', ' ') }}
+                                </span>
                             </div>
                             <h5 class="card-title text-muted">Конверсии</h5>
                         </div>
@@ -72,7 +103,9 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <i class="bi bi-currency-ruble fs-4 text-danger"></i>
-                                <span class="badge bg-danger rounded-pill px-3">{{ number_format($stats['revenue'], 2, ',', ' ') }} ₽</span>
+                                <span class="badge bg-danger rounded-pill px-3">
+                                    {{ number_format($stats['revenue'], 2, ',', ' ') }} ₽
+                                </span>
                             </div>
                             <h5 class="card-title text-muted">Доход</h5>
                         </div>
@@ -80,54 +113,122 @@
                 </div>
             </div>
 
+                    <!-- Детализация показателей -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Детализация показателей</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <!-- CTR -->
+                            <dt class="col-sm-3">CTR (кликабельность):</dt>
+                            <dd class="col-sm-9">
+                                @if($stats['views'] > 0)
+                                    {{ number_format(($stats['clicks'] / $stats['views']) * 100, 2) }}%
+                                @else
+                                    —
+                                @endif
+                            </dd>
 
-            <!-- Детализация -->
-            <div class="row">
+                            <!-- Конверсия -->
+                            <dt class="col-sm-3">Конверсия:</dt>
+                            <dd class="col-sm-9">
+                                @if($stats['clicks'] > 0)
+                                    {{ number_format(($stats['conversions'] / $stats['clicks']) * 100, 2) }}%
+                                @else
+                                    —
+                                @endif
+                            </dd>
+
+                            <!-- Средний чек -->
+                            <dt class="col-sm-3">Средний чек:</dt>
+                            <dd class="col-sm-9">
+                                @if($stats['conversions'] > 0)
+                                    {{ number_format($stats['revenue'] / $stats['conversions'], 2, ',', ' ') }} ₽
+                                @else
+                                    —
+                                @endif
+                            </dd>
+
+                            <!-- Стоимость клика -->
+                            <dt class="col-sm-3">Стоимость клика:</dt>
+                            <dd class="col-sm-9">
+                                @if($stats['clicks'] > 0)
+                                    {{ number_format($stats['revenue'] / $stats['clicks'], 2, ',', ' ') }} ₽
+                                @else
+                                    —
+                                @endif
+                            </dd>
+
+                            <!-- ROI (возврат инвестиций) -->
+                            <dt class="col-sm-3">ROI:</dt>
+                            <dd class="col-sm-9">
+                                @if($stats['cost'] > 0)
+                                    {{ number_format((($stats['revenue'] - $stats['cost']) / $stats['cost']) * 100, 2) }}%
+                                @else
+                                    —
+                                @endif
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- График (опционально) -->
+        @if(isset($chartData) && count($chartData) > 0)
+            <div class="row mt-4">
                 <div class="col-12">
                     <div class="card shadow-sm">
-                        <div class="card-header bg-white border-bottom">
-                            <h5 class="mb-0">Детализация показателей</h5>
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Динамика показателей</h5>
                         </div>
                         <div class="card-body">
-                            <dl class="row">
-                                <dt class="col-sm-3">CTR (кликабельность):</dt>
-                                <dd class="col-sm-9">
-                                    @if($stats['views'] > 0)
-                                        {{ number_format(($stats['clicks'] / $stats['views']) * 100, 2) }}%
-                                    @else
-                                        —
-                                    @endif
-                                </dd>
-
-
-                                <dt class="col-sm-3">Конверсия:</dt>
-                                <dd class="col-sm-9">
-                                    @if($stats['clicks'] > 0)
-                                        {{ number_format(($stats['conversions'] / $stats['clicks']) * 100, 2) }}%
-                                    @else
-                                        —
-                                    @endif
-                                </dd>
-
-                                <dt class="col-sm-3">Средний чек:</dt>
-                                <dd class="col-sm-9">
-                                    @if($stats['conversions'] > 0)
-                                        {{ number_format($stats['revenue'] / $stats['conversions'], 2, ',', ' ') }} ₽
-                                    @else
-                                        —
-                                    @endif
-                                </dd>
-                            </dl>
+                            <canvas id="statsChart" height="100"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        @else
-            <!-- Сообщение об отсутствии данных -->
-            <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle-fill fs-4"></i>
-                <p class="mt-2 mb-0">Нет данных за выбранный период.</p>
-            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                const statsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: @json(array_keys($chartData)),
+                        datasets: [
+                            {
+                                label: 'Просмотры',
+                                data: @json(array_column($chartData, 'views')),
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Клики',
+                                data: @json(array_column($chartData, 'clicks')),
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Конверсии',
+                                data: @json(array_column($chartData, 'conversions')),
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                tension: 0.1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' }
+                        }
+                    }
+                });
+            </script>
+        @endif
         @endif
 
         <!-- Кнопка возврата -->

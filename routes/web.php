@@ -41,11 +41,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.offers.create');
         Route::post('/offers', [AdvertiserController::class, 'store'])->name('advertiser.offers.store');
         Route::delete('/offers/{id}', [AdvertiserController::class, 'destroy'])->name('advertiser.offers.destroy');
-        Route::get('/offers/{id}/stats', [AdvertiserController::class, 'stats'])
-            ->name('advertiser.offers.stats')
-            ->where('period', 'day|month|year');
+        Route::get('/advertiser/offers/{id}/stats/{period?}', [AdvertiserController::class, 'offerStats'
+                 ])->name('advertiser.offers.stats');
         Route::post('/offers/{id}/activate', [AdvertiserController::class, 'activateOffer'])
-        ->name('advertiser.offers.activate');
+                ->name('advertiser.offers.activate');
 
 
         // Добавлен метод для деактивации оффера

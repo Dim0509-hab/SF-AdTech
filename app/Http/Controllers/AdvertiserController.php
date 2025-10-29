@@ -7,6 +7,8 @@ use App\Models\Offer;
 use App\Models\Click;
 use App\Models\Conversion;
 use App\Models\View;
+use App\Models\AdSpend;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -95,6 +97,17 @@ class AdvertiserController extends Controller
 
         return view('advertiser.offers.stats', compact('offer', 'stats'));
     }
+    public function activateOffer($id)
+{
+    $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($id);
+
+    $offer->update(['active' => true]);
+
+    return redirect()
+        ->route('advertiser.offers.index')
+        ->with('success', 'Оффер успешно активирован');
+}
+
 
     public function deactivateOffer($id)
     {
@@ -105,35 +118,31 @@ class AdvertiserController extends Controller
             ->route('advertiser.offers.index')
             ->with('success', 'Оффер деактивирован');
     }
-    public function activateOffer($id)
-    {
-        $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($id);
-
-        $offer->update(['active' => true]);
-
-        return redirect()
-            ->route('advertiser.offers.index')
-            ->with('success', 'Оффер успешно активирован');
-    }
     public function offerStats($id, $period = 'day')
-    {
-        $offer = Offer::where('user_id', Auth::id())->findOrFail($id);
+{
+    // Валидация периода
+    $period = in_array($period, ['day', 'month', 'year']) ? $period : 'day';
 
-        // Определяем интервал для запроса
-        $now = now();
-        switch ($period) {
-            case 'day':
-                $startDate = $now->startOfDay();
-                break;
-            case 'month':
-                $startDate = $now->startOfMonth();
-                break;
-            case 'year':
-                $startDate = $now->startOfYear();
-                break;
-        }
 
-    // Собираем статистику
+    // Поиск оффера по ID и принадлежности текущему рекламодателю
+    $offer = Offer::where('advertiser_id', Auth::id())
+        ->findOrFail($id);
+
+    // Определение даты начала периода
+    $now = now();
+    switch ($period) {
+        case 'day':
+            $startDate = $now->startOfDay();
+            break;
+        case 'month':
+            $startDate = $now->startOfMonth();
+            break;
+        case 'year':
+            $startDate = $now->startOfYear();
+            break;
+    }
+
+    // Сбор статистики
     $stats = [
         'views' => View::where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
@@ -141,7 +150,7 @@ class AdvertiserController extends Controller
 
         'clicks' => Click::where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
-            ->sum('count') ?? 0, // если поле count есть
+            ->sum('count') ?? 0,
 
         'conversions' => Conversion::where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
@@ -150,10 +159,17 @@ class AdvertiserController extends Controller
         'revenue' => Conversion::where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
             ->sum('amount') ?? 0,
+
+        'cost' => AdSpend::where('offer_id', $offer->id)
+            ->where('date', '>=', $startDate)
+            ->sum('amount') ?? 0,
+
     ];
 
     return view('advertiser.offers.stats', compact('offer', 'stats', 'period'));
-    }
+}
+
+
 
 
 }

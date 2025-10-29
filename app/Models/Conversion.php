@@ -12,7 +12,7 @@ class Conversion extends Model
         'offer_id',
         'webmaster_id',
         'amount',     // сумма конверсии
-        // другие поля
+
     ];
 
     // Связь с оффером
