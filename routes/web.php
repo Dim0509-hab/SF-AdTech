@@ -29,37 +29,48 @@ Route::middleware(['auth'])->group(function () {
         if ($user && $user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'advertiser') {
-            return redirect()->route('advertiser.offers.index');
+            return redirect()->route('advertiser.index');
         } else {
-            return redirect()->route('webmaster.offers.index');
+            return redirect()->route('webmaster.index');
         }
     })->name('dashboard');
 
+
+
+
+
+
     // === Рекламодатель ===
     Route::prefix('advertiser')->group(function () {
-        Route::get('/offers', [AdvertiserController::class, 'index'])->name('advertiser.offers.index');
-        Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.offers.create');
-        Route::post('/offers', [AdvertiserController::class, 'store'])->name('advertiser.offers.store');
+        Route::get('/offers', [AdvertiserController::class, 'index'])->name('advertiser.index');
+        Route::get('/offers/create', [AdvertiserController::class, 'create'])->name('advertiser.create');
         Route::delete('/offers/{id}', [AdvertiserController::class, 'destroy'])->name('advertiser.offers.destroy');
         Route::get('/advertiser/offers/{id}/stats/{period?}', [AdvertiserController::class, 'offerStats'
-                 ])->name('advertiser.offers.stats');
+                 ])->name('advertiser.stats');
+        Route::post('/offers', [AdvertiserController::class, 'store'])
+            ->name('advertiser.store');
         Route::post('/offers/{id}/activate', [AdvertiserController::class, 'activateOffer'])
                 ->name('advertiser.offers.activate');
-
-
-        // Добавлен метод для деактивации оффера
         Route::post('/offers/{id}/deactivate', [AdvertiserController::class, 'deactivateOffer'])
             ->name('advertiser.offers.deactivate');
     });
 
+
+
     // === Вебмастер ===
     Route::prefix('webmaster')->group(function () {
-        Route::get('/offers', [WebmasterController::class, 'index'])->name('webmaster.offers.index');
+        Route::get('/offers', [WebmasterController::class, 'index'])->name('webmaster.index');
         Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])->name('webmaster.offers.subscribe');
         Route::post('/offers/{id}/unsubscribe', [WebmasterController::class, 'unsubscribe'])->name('webmaster.offers.unsubscribe');
         Route::get('/offers/{id}/link', [WebmasterController::class, 'getLink'])->name('webmaster.offers.link');
         Route::get('/offers/{id}/stats', [WebmasterController::class, 'stats'])->name('webmaster.offers.stats');
+        Route::get('/stats/{offerId?}', [WebmasterController::class, 'stats'])
+            ->name('webmaster.stats')
+            ->where('offerId', '[0-9]+');
     });
+
+
+
 
     // === Администратор ===
     Route::prefix('admin')->group(function () {

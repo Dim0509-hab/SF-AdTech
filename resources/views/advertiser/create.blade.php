@@ -16,7 +16,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('advertiser.offers.store') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('advertiser.store') }}" enctype="multipart/form-data">
     @csrf
 
     <div class="mb-3">

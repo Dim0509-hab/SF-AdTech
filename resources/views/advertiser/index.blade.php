@@ -3,12 +3,12 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Мои офферы</h2>
-        <a class="btn btn-primary" href="{{ route('advertiser.offers.create') }}">Создать оффер</a>
+        <a class="btn btn-primary" href="{{ route('advertiser.create') }}">Создать оффер</a>
     </div>
 
     @if($offers->isEmpty())
         <div class="alert alert-info">
-            Офферов пока нет. <a href="{{ route('advertiser.offers.create') }}">Создайте первый</a>.
+            Офферов пока нет. <a href="{{ route('advertiser.create') }}">Создайте первый</a>.
         </div>
     @else
         <table class="table table-striped table-hover">
@@ -37,7 +37,7 @@
                         <td class="text-end">
                             <div class="btn-group" role="group">
                                 <a class="btn btn-sm btn-outline-info"
-                                   href="{{ route('advertiser.offers.stats', $offer->id) }}"
+                                   href="{{ route('advertiser.stats', $offer->id) }}"
                                    title="Статистика">
                                     <i class="bi bi-graph-up"></i>
                                 </a>

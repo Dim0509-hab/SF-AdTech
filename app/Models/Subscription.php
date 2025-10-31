@@ -4,23 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Subscription extends Model
 {
-    protected $fillable = [
-        'offer_id',
-        'webmaster_id',
-        // другие поля, которые можно заполнять
-    ];
+    protected $fillable = ['webmaster_id', 'offer_id', 'cost_per_click', 'system_link'];
 
-    // Связь с оффером
+    public function webmaster()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function offer()
     {
         return $this->belongsTo(Offer::class);
     }
 
-    // Связь с веб‑мастером (пользователем)
-    public function webmaster()
+    public function clicks()
     {
-        return $this->belongsTo(User::class, 'webmaster_id');
+        return $this->hasMany(Click::class);
     }
 }
+

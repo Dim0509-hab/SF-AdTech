@@ -39,13 +39,13 @@ class AuthController extends Controller
         'email' => $validated['email'],
         'password' => Hash::make($validated['password']),
         'active' => 1,
-        'role' => $validated['role'],      // строка: 'advertiser' / 'webmaster'
-        'role_id' => $role->id,       // число: ID из таблицы roles
+        'role' => $validated['role'],
+        'role_id' => $role->id,
     ]);
 
     Auth::login($user);
     return $this->afterLoginRedirect($user);
-}
+    }
 
 
 
@@ -81,7 +81,7 @@ class AuthController extends Controller
 
     // Проверяем, существует ли роль
     if (is_null($userRole)) {
-        return redirect()->route('webmaster.offers.index')
+        return redirect()->route('webmaster.index')
             ->with('error', 'Роль не назначена');
     }
 
@@ -94,10 +94,10 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
             break;
         case 'advertiser':
-            return redirect()->route('advertiser.offers.index');
+            return redirect()->route('advertiser.index');
             break;
         default:
-            return redirect()->route('webmaster.offers.index');
+            return redirect()->route('webmaster.index');
             break;
     }
 }

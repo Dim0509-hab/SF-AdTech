@@ -22,15 +22,15 @@
             <div class="col">
                 <!-- Селектор периода -->
                 <div class="btn-group" role="group" aria-label="Выбор периода">
-                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'day']) }}"
+                    <a href="{{ route('advertiser.stats', [$offer->id, 'day']) }}"
                        class="btn btn-sm {{ $period === 'day' ? 'btn-primary' : 'btn-outline-secondary' }}">
                         <i class="bi bi-calendar-day"></i> За день
                     </a>
-                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'month']) }}"
+                    <a href="{{ route('advertiser.stats', [$offer->id, 'month']) }}"
                        class="btn btn-sm {{ $period === 'month' ? 'btn-primary' : 'btn-outline-secondary' }}">
                         <i class="bi bi-calendar-month"></i> За месяц
                     </a>
-                    <a href="{{ route('advertiser.offers.stats', [$offer->id, 'year']) }}"
+                    <a href="{{ route('advertiser.stats', [$offer->id, 'year']) }}"
                        class="btn btn-sm {{ $period === 'year' ? 'btn-primary' : 'btn-outline-secondary' }}">
                         <i class="bi bi-calendar-year"></i> За год
                     </a>
@@ -81,6 +81,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Конверсии -->
                 <div class="col">
@@ -177,7 +178,7 @@
             </div>
         </div>
 
-        <!-- График (опционально) -->
+                <!-- График -->
         @if(isset($chartData) && count($chartData) > 0)
             <div class="row mt-4">
                 <div class="col-12">
@@ -186,55 +187,69 @@
                             <h5 class="mb-0">Динамика показателей</h5>
                         </div>
                         <div class="card-body">
-                            <canvas id="statsChart" height="100"></canvas>
+                            <canvas id="statsChart" height="200"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Подгрузка Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+
+            <!-- Инициализация графика -->
             <script>
-                const ctx = document.getElementById('statsChart').getContext('2d');
-                const statsChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: @json(array_keys($chartData)),
-                        datasets: [
-                            {
-                                label: 'Просмотры',
-                                data: @json(array_column($chartData, 'views')),
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                tension: 0.1
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('statsChart').getContext('2d');
+                    const statsChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: @json(array_keys($chartData)),
+                            datasets: [
+                                {
+                                    label: 'Просмотры',
+                                    data: @json(array_column($chartData, 'views')),
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    tension: 0.1,
+                                    fill: false
+                                },
+                                {
+                                    label: 'Клики',
+                                    data: @json(array_column($chartData, 'clicks')),
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    tension: 0.1,
+                                    fill: false
+                                },
+                                {
+                                    label: 'Конверсии',
+                                    data: @json(array_column($chartData, 'conversions')),
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    tension: 0.1,
+                                    fill: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: { mode: 'index', intersect: false }
                             },
-                            {
-                                label: 'Клики',
-                                data: @json(array_column($chartData, 'clicks')),
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                tension: 0.1
-                            },
-                            {
-                                label: 'Конверсии',
-                                data: @json(array_column($chartData, 'conversions')),
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                tension: 0.1
+                            scales: {
+                                y: { beginAtZero: true }
                             }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'top' }
                         }
-                    }
+                    });
                 });
             </script>
         @endif
+
         @endif
 
         <!-- Кнопка возврата -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a href="{{ route('advertiser.offers.index') }}" class="btn btn-outline-primary px-4">
+                <a href="{{ route('advertiser.index') }}" class="btn btn-outline-primary px-4">
                     <i class="bi bi-arrow-left"></i> Назад к списку офферов
                 </a>
             </div>

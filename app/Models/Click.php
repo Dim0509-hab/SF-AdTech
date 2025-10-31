@@ -6,19 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Click extends Model
 {
-    protected $table = 'clicks'; // имя таблицы в БД
+    protected $fillable = ['subscription_id', 'ip', 'user_agent', 'created_at'];
 
-    protected $fillable = [
-        'offer_id',
-        'webmaster_id',
-        'cost',       // стоимость клика
-        'click_id',  // если есть отдельный идентификатор клика
-
-    ];
-
-    // Связь с оффером
-    public function offer()
+    public function subscription()
     {
-        return $this->belongsTo(Offer::class);
+        return $this->belongsTo(Subscription::class);
     }
 }
+

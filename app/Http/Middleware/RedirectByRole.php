@@ -27,9 +27,9 @@ class RedirectByRole
             case 'admin':
                 return redirect()->route('admin.dashboard');
             case 'advertiser':
-                return redirect()->route('advertiser.offers.index');
+                return redirect()->route('advertiser.index');
             case 'webmaster':
-                return redirect()->route('webmaster.offers.index');
+                return redirect()->route('webmaster.index');
             default:
                 Log::error('Unknown role: ' . $user->role);
                 abort(403, 'Неизвестная роль');

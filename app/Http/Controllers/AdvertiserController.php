@@ -8,7 +8,6 @@ use App\Models\Click;
 use App\Models\Conversion;
 use App\Models\View;
 use App\Models\AdSpend;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,8 +26,7 @@ class AdvertiserController extends Controller
 
     public function __construct()
     {
-    $this->middleware(function ($request, $next) {
-        $this->authorizeUser();
+    $this->middleware(function ($request, $next) { $this->authorizeUser();
         return $next($request);
     });
     }
@@ -43,14 +41,14 @@ class AdvertiserController extends Controller
         $offers = Offer::where('advertiser_id', Auth::id())
             ->withCount('webmasters')
             ->paginate(10);
-        return view('advertiser.offers.index', compact('offers'));
+        return view('advertiser.index', compact('offers'));
     }
-/**
+    /**
      * Форма создания оффера
      */
     public function create()
     {
-        return view('advertiser.offers.create');
+        return view('advertiser.create');
     }
 
     public function store(Request $request)
@@ -76,7 +74,7 @@ class AdvertiserController extends Controller
         ]);
 
         return redirect()
-            ->route('advertiser.offers.index')
+            ->route('advertiser.index')
             ->with('success', 'Оффер создан!');
     }
 
@@ -86,7 +84,7 @@ class AdvertiserController extends Controller
         $offer->delete();
 
         return redirect()
-            ->route('advertiser.offers.index')
+            ->route('advertiser.index')
             ->with('success', 'Оффер удалён!');
     }
 
@@ -95,7 +93,7 @@ class AdvertiserController extends Controller
         $offer = Offer::where('advertiser_id', Auth::id())->findOrFail($offerId);
         $stats = $offer->getStats();
 
-        return view('advertiser.offers.stats', compact('offer', 'stats'));
+        return view('advertiser.stats', compact('offer', 'stats'));
     }
     public function activateOffer($id)
 {
@@ -104,7 +102,7 @@ class AdvertiserController extends Controller
     $offer->update(['active' => true]);
 
     return redirect()
-        ->route('advertiser.offers.index')
+        ->route('advertiser.index')
         ->with('success', 'Оффер успешно активирован');
 }
 
@@ -115,7 +113,7 @@ class AdvertiserController extends Controller
         $offer->update(['active' => false]);
 
         return redirect()
-            ->route('advertiser.offers.index')
+            ->route('advertiser.index')
             ->with('success', 'Оффер деактивирован');
     }
     public function offerStats($id, $period = 'day')
@@ -166,11 +164,8 @@ class AdvertiserController extends Controller
 
     ];
 
-    return view('advertiser.offers.stats', compact('offer', 'stats', 'period'));
+    return view('advertiser.stats', compact('offer', 'stats', 'period'));
 }
-
-
-
 
 }
 
