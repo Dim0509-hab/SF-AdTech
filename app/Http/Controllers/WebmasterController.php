@@ -47,55 +47,58 @@ public function __construct()
     }
 
 
-public function stats($offerId = null)
+public function stats()
 {
     $webmasterId = Auth::id();
 
-    // Если ID оффера не передан — показываем список всех подписанных офферов
-    if (!$offerId) {
-        $subscriptions = Subscription::where('webmaster_id', $webmasterId)
-            ->with('offer')
-            ->get();
 
-        return view('webmaster.stats_list', compact('subscriptions'));
-    }
+    // Получаем подписки веб‑мастера с офферами и кликами
+    $subscriptions = Subscription::where('webmaster_id', $webmasterId)
+        ->with(['offer', 'clicks'])
+        ->get();
 
-    // Иначе — статистика по конкретному офферу
-    $subscription = Subscription::where('webmaster_id', $webmasterId)
-        ->where('offer_id', $offerId)
-        ->with('offer')
-        ->first();
-
-    if (!$subscription) {
-        abort(404, 'Вы не подписаны на этот оффер');
-    }
-
+    // Считаем статистику
     $today = now()->startOfDay();
     $month = now()->startOfMonth();
     $year = now()->startOfYear();
 
-    $clicks = $subscription->clicks();
-
-    $pricePerClick = $subscription->cost_per_click;
-
-
     $stats = [
         'today' => [
-            'clicks' => $clicks->where('created_at', '>=', $today)->count(),
-            'revenue' => $clicks->where('created_at', '>=', $today)->count() * $pricePerClick,
+            'clicks' => 0,
+            'revenue' => 0,
         ],
         'month' => [
-            'clicks' => $clicks->where('created_at', '>=', $month)->count(),
-            'revenue' => $clicks->where('created_at', '>=', $month)->count() * $pricePerClick,
+            'clicks' => 0,
+            'revenue' => 0,
         ],
         'year' => [
-            'clicks' => $clicks->where('created_at', '>=', $year)->count(),
-            'revenue' => $clicks->where('created_at', '>=', $year)->count() * $pricePerClick,
+            'clicks' => 0,
+            'revenue' => 0,
         ],
     ];
 
-    return view('webmaster.stats_list', compact('subscription', 'stats'));
+    foreach ($subscriptions as $sub) {
+        $pricePerClick = $sub->cost_per_click;
+
+        // Сегодня
+        $todayClicks = $sub->clicks->where('created_at', '>=', $today)->count();
+        $stats['today']['clicks'] += $todayClicks;
+        $stats['today']['revenue'] += $todayClicks * $pricePerClick;
+
+        // Месяц
+        $monthClicks = $sub->clicks->where('created_at', '>=', $month)->count();
+        $stats['month']['clicks'] += $monthClicks;
+        $stats['month']['revenue'] += $monthClicks * $pricePerClick;
+
+        // Год
+        $yearClicks = $sub->clicks->where('created_at', '>=', $year)->count();
+        $stats['year']['clicks'] += $yearClicks;
+        $stats['year']['revenue'] += $yearClicks * $pricePerClick;
+    }
+
+    return view('webmaster.stats', compact('stats', 'subscriptions'));
 }
+
 
 }
 

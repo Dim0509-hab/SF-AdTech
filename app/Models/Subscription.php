@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\User;
+use App\Models\Offer;
+use App\Models\Click;
 
 class Subscription extends Model
 {
@@ -11,12 +13,12 @@ class Subscription extends Model
 
     public function webmaster()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'webmaster_id');
     }
 
     public function offer()
     {
-        return $this->belongsTo(Offer::class);
+        return $this->belongsTo(Offer::class, 'offer_id');
     }
 
     public function clicks()
@@ -24,4 +26,5 @@ class Subscription extends Model
         return $this->hasMany(Click::class);
     }
 }
+
 

@@ -63,10 +63,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])->name('webmaster.offers.subscribe');
         Route::post('/offers/{id}/unsubscribe', [WebmasterController::class, 'unsubscribe'])->name('webmaster.offers.unsubscribe');
         Route::get('/offers/{id}/link', [WebmasterController::class, 'getLink'])->name('webmaster.offers.link');
-        Route::get('/offers/{id}/stats', [WebmasterController::class, 'stats'])->name('webmaster.offers.stats');
-        Route::get('/stats/{offerId?}', [WebmasterController::class, 'stats'])
-            ->name('webmaster.stats')
-            ->where('offerId', '[0-9]+');
+
+        Route::get('/offers/{id}/stats', [WebmasterController::class, 'stats'])->name('webmaster.stats');
+
+        //Route::get('/stats/{offerId?}', [WebmasterController::class, 'stats'])
+           // ->name('webmaster.stats')->where('offerId', '[0-9]+');
+        Route::get('/stats', [WebmasterController::class, 'stats'])
+            ->name('webmaster.stats');
+
     });
 
 

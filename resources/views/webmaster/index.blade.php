@@ -2,6 +2,10 @@
 @extends('layouts.app')
 @section('content')
 <h2>Доступные офферы</h2>
+<!-- Кнопка перехода к статистике -->
+<a href="{{ route('webmaster.stats') }}" class="btn btn-info mb-3">
+    Посмотреть статистику доходов
+</a>
 <table class="table"><thead><tr>
     <th>Имя</th><th>Цена</th><th>Действие</th>
 </tr></thead><tbody>
