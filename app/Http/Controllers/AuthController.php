@@ -47,10 +47,6 @@ class AuthController extends Controller
     return $this->afterLoginRedirect($user);
     }
 
-
-
-
-
     public function login(Request $r)
     {
         $r->validate([
@@ -100,6 +96,6 @@ class AuthController extends Controller
             return redirect()->route('webmaster.index');
             break;
     }
-}
+    }
 
 }

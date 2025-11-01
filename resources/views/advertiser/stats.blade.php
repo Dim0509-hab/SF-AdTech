@@ -178,71 +178,7 @@
             </div>
         </div>
 
-                <!-- График -->
-        @if(isset($chartData) && count($chartData) > 0)
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">Динамика показателей</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="statsChart" height="200"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Подгрузка Chart.js -->
-            <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-
-
-            <!-- Инициализация графика -->
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const ctx = document.getElementById('statsChart').getContext('2d');
-                    const statsChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: @json(array_keys($chartData)),
-                            datasets: [
-                                {
-                                    label: 'Просмотры',
-                                    data: @json(array_column($chartData, 'views')),
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    tension: 0.1,
-                                    fill: false
-                                },
-                                {
-                                    label: 'Клики',
-                                    data: @json(array_column($chartData, 'clicks')),
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    tension: 0.1,
-                                    fill: false
-                                },
-                                {
-                                    label: 'Конверсии',
-                                    data: @json(array_column($chartData, 'conversions')),
-                                    borderColor: 'rgba(255, 99, 132, 1)',
-                                    tension: 0.1,
-                                    fill: false
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'top' },
-                                tooltip: { mode: 'index', intersect: false }
-                            },
-                            scales: {
-                                y: { beginAtZero: true }
-                            }
-                        }
-                    });
-                });
-            </script>
-        @endif
 
         @endif
 

@@ -7,23 +7,24 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-class WebmasterController extends Controller {
+class WebmasterController extends Controller
+{
 
  ///////////////////////
-    protected function authorizeUser()
-{
-    if (Auth::user()->role !== 'webmaster') {
-        abort(403, 'Доступ запрещён');
+        protected function authorizeUser()
+    {
+        if (Auth::user()->role !== 'webmaster') {
+            abort(403, 'Доступ запрещён');
+        }
     }
-}
 
-public function __construct()
-{
-    $this->middleware(function ($request, $next) {
-        $this->authorizeUser();
-        return $next($request);
-    });
-}
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->authorizeUser();
+            return $next($request);
+        });
+    }
 
     public function index(){ $offers = Offer::where('active',1)
         ->withCount('webmasters')->get(); $subs = Auth::user()
@@ -47,57 +48,57 @@ public function __construct()
     }
 
 
-public function stats()
-{
-    $webmasterId = Auth::id();
+    public function stats()
+    {
+        $webmasterId = Auth::id();
 
 
-    // Получаем подписки веб‑мастера с офферами и кликами
-    $subscriptions = Subscription::where('webmaster_id', $webmasterId)
-        ->with(['offer', 'clicks'])
-        ->get();
+        // Получаем подписки веб‑мастера с офферами и кликами
+        $subscriptions = Subscription::where('webmaster_id', $webmasterId)
+            ->with(['offer', 'clicks'])
+            ->get();
 
-    // Считаем статистику
-    $today = now()->startOfDay();
-    $month = now()->startOfMonth();
-    $year = now()->startOfYear();
+        // Считаем статистику
+        $today = now()->startOfDay();
+        $month = now()->startOfMonth();
+        $year = now()->startOfYear();
 
-    $stats = [
-        'today' => [
-            'clicks' => 0,
-            'revenue' => 0,
-        ],
-        'month' => [
-            'clicks' => 0,
-            'revenue' => 0,
-        ],
-        'year' => [
-            'clicks' => 0,
-            'revenue' => 0,
-        ],
-    ];
+        $stats = [
+            'today' => [
+                'clicks' => 0,
+                'revenue' => 0,
+            ],
+            'month' => [
+                'clicks' => 0,
+                'revenue' => 0,
+            ],
+            'year' => [
+                'clicks' => 0,
+                'revenue' => 0,
+            ],
+        ];
 
-    foreach ($subscriptions as $sub) {
-        $pricePerClick = $sub->cost_per_click;
+        foreach ($subscriptions as $sub) {
+            $pricePerClick = $sub->cost_per_click;
 
-        // Сегодня
-        $todayClicks = $sub->clicks->where('created_at', '>=', $today)->count();
-        $stats['today']['clicks'] += $todayClicks;
-        $stats['today']['revenue'] += $todayClicks * $pricePerClick;
+            // Сегодня
+            $todayClicks = $sub->clicks->where('created_at', '>=', $today)->count();
+            $stats['today']['clicks'] += $todayClicks;
+            $stats['today']['revenue'] += $todayClicks * $pricePerClick;
 
-        // Месяц
-        $monthClicks = $sub->clicks->where('created_at', '>=', $month)->count();
-        $stats['month']['clicks'] += $monthClicks;
-        $stats['month']['revenue'] += $monthClicks * $pricePerClick;
+            // Месяц
+            $monthClicks = $sub->clicks->where('created_at', '>=', $month)->count();
+            $stats['month']['clicks'] += $monthClicks;
+            $stats['month']['revenue'] += $monthClicks * $pricePerClick;
 
-        // Год
-        $yearClicks = $sub->clicks->where('created_at', '>=', $year)->count();
-        $stats['year']['clicks'] += $yearClicks;
-        $stats['year']['revenue'] += $yearClicks * $pricePerClick;
+            // Год
+            $yearClicks = $sub->clicks->where('created_at', '>=', $year)->count();
+            $stats['year']['clicks'] += $yearClicks;
+            $stats['year']['revenue'] += $yearClicks * $pricePerClick;
+        }
+
+        return view('webmaster.stats', compact('stats', 'subscriptions'));
     }
-
-    return view('webmaster.stats', compact('stats', 'subscriptions'));
-}
 
 
 }

@@ -18,11 +18,21 @@
                @auth
     @php $role = auth()->user()->role; @endphp
 
+    @auth
+    @php
+        $user = auth()->user();
+        //echo '<pre>role: ' . gettype($user->role) . ' | value: ' . json_encode($user->role) . '</pre>';
+    @endphp
+
     <li class="nav-item">
         <span class="nav-link fw-bold">
-            {{ auth()->user()->name }} <small class="text-muted">({{ $role }})</small>
+            {{ $user->name }}
+            <small class="text-muted">
+                ({{ $user->role ?? 'Без роли' }})
+            </small>
         </span>
     </li>
+    @endauth
 
     @if($role === 'admin')
         <li class="nav-item"><a class="nav-link" href="{{ url('/admin/dashboard') }}">Админ-панель</a></li>
@@ -47,7 +57,7 @@
     </div>
 </nav>
 
-<div class="container py-4">
+    <div class="container py-4">
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

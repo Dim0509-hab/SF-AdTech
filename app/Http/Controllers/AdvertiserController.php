@@ -116,56 +116,60 @@ class AdvertiserController extends Controller
             ->route('advertiser.index')
             ->with('success', 'Оффер деактивирован');
     }
-    public function offerStats($id, $period = 'day')
+   public function offerStats($id, $period = 'day')
 {
-    // Валидация периода
-    $period = in_array($period, ['day', 'month', 'year']) ? $period : 'day';
+    // 1. Валидация периода
+    $validPeriods = ['day', 'month', 'year'];
+    $period = in_array($period, $validPeriods) ? $period : 'day';
 
-
-    // Поиск оффера по ID и принадлежности текущему рекламодателю
+    // 2. Поиск оффера (с проверкой прав)
     $offer = Offer::where('advertiser_id', Auth::id())
         ->findOrFail($id);
 
-    // Определение даты начала периода
+    // 3. Определение даты начала периода
     $now = now();
-    switch ($period) {
-        case 'day':
-            $startDate = $now->startOfDay();
-            break;
-        case 'month':
-            $startDate = $now->startOfMonth();
-            break;
-        case 'year':
-            $startDate = $now->startOfYear();
-            break;
-    }
+    $startDate = match ($period) {
+        'day' => $now->startOfDay(),
+        'month' => $now->startOfMonth(),
+        'year' => $now->startOfYear(),
+    };
 
-    // Сбор статистики
+    // 4. Сбор статистики с защитой от пустых значений
     $stats = [
-        'views' => View::where('offer_id', $offer->id)
+        // Просмотры
+        'views' => View::query()
+            ->where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
             ->count(),
 
-        'clicks' => Click::where('offer_id', $offer->id)
+        // Клики (сумма поля `count`)
+        'clicks' => Click::query()
+            ->where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
-            ->sum('count') ?? 0,
+            ->sum('count') ?: 0,
 
-        'conversions' => Conversion::where('offer_id', $offer->id)
+        // Конверсии
+        'conversions' => Conversion::query()
+            ->where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
             ->count(),
 
-        'revenue' => Conversion::where('offer_id', $offer->id)
+        // Доход (сумма `revenue`)
+        'revenue' => Conversion::query()
+            ->where('offer_id', $offer->id)
             ->where('created_at', '>=', $startDate)
-            ->sum('amount') ?? 0,
+            ->sum('revenue') ?: 0,
 
-        'cost' => AdSpend::where('offer_id', $offer->id)
+        // Затраты (сумма `amount`)
+        'cost' => AdSpend::query()
+            ->where('offer_id', $offer->id)
             ->where('date', '>=', $startDate)
-            ->sum('amount') ?? 0,
-
+            ->sum('amount') ?: 0,
     ];
 
     return view('advertiser.stats', compact('offer', 'stats', 'period'));
 }
+
 
 }
 

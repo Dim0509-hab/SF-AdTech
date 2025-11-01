@@ -15,33 +15,20 @@ use Illuminate\Support\Facades\Auth;
  */
 class AdminController extends Controller
 {
-    /**
-     * AdminController constructor.
-     *
-     * Применяет middleware:
-     *  - auth         => только авторизованные пользователи
-     *  - role:admin   => только с ролью admin
-     *
-     * Разделение вызовов middleware помогает IDE корректно распознавать методы.
-     */
-
-
-    protected function authorizeUser()
-{
-    if (Auth::user()->role !== 'admin') {
-        abort(403, 'Доступ запрещён');
+            protected function authorizeUser()
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Доступ запрещён');
+        }
     }
-}
 
-public function __construct()
-{
-    $this->middleware(function ($request, $next) {
-        $this->authorizeUser();
-        return $next($request);
-    });
-}
-
-
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->authorizeUser();
+            return $next($request);
+        });
+    }
     /**
      * Главная страница админки.
      *
