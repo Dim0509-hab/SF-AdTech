@@ -32,6 +32,24 @@ class WebmasterController extends Controller
         ->withCount('webmasters')->get(); $subs = Auth::user()
         ->subscriptions()->pluck('offer_id')
         ->toArray(); return view('webmaster.index', compact('offers','subs')); }
+
+        public function offers()
+    {
+        // Получение активных офферов
+        $offers = Offer::where('active', 1)
+            ->withCount('webmasters')
+            ->get();
+
+        // ID подписок текущего пользователя
+        $subs = Auth::user()
+            ->subscriptions()
+            ->pluck('offer_id')
+            ->toArray();
+
+        // Передача данных в шаблон
+        return view('webmaster.index', compact('offers', 'subs'));
+    }
+
     public function subscribe($id)
     {
          Auth::user()

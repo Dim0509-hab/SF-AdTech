@@ -77,7 +77,7 @@ class AuthController extends Controller
 
     // Проверяем, существует ли роль
     if (is_null($userRole)) {
-        return redirect()->route('webmaster.index')
+        return redirect()->route('webmaster.offers')
             ->with('error', 'Роль не назначена');
     }
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
             return redirect()->route('advertiser.index');
             break;
         default:
-            return redirect()->route('webmaster.index');
+    return redirect()->route('webmaster.offers');
             break;
     }
     }

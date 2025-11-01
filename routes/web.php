@@ -61,28 +61,34 @@ Route::middleware(['auth'])->group(function () {
 
 
     // === Вебмастер ===
-    Route::prefix('webmaster')->group(function () {
-    Route::get('/offers', [WebmasterController::class, 'index'])
-        ->name('webmaster.index');
+            Route::prefix('webmaster')->group(function () {
+            // Главная страница офферов (ранее была 'index')
 
-    Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])
-        ->name('webmaster.offers.subscribe');
+            Route::get('/webmaster', [WebmasterController::class, 'index'])
+                ->name('webmaster.index');
 
-    Route::post('/offers/{id}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
-        ->name('webmaster.offers.unsubscribe');
+            Route::get('/offers', [WebmasterController::class, 'offers'])
+                ->name('webmaster.offers');
 
-    Route::get('/offers/{id}/link', [WebmasterController::class, 'getLink'])
-        ->name('webmaster.offers.link');
+            // Подписка/отписка
+            Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])
+                ->name('webmaster.offers.subscribe');
 
-    // Изменено: уникальный суффикс для статистики оффера
-    Route::get('/offers/{id}/stats', [WebmasterController::class, 'offerStats'])
-        ->name('webmaster.offers.stats');
+            Route::post('/offers/{id}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
+                ->name('webmaster.offers.unsubscribe');
 
+            // Получение ссылки и статистики по офферу
+            Route::get('/offers/{id}/link', [WebmasterController::class, 'getLink'])
+                ->name('webmaster.offers.link');
 
-    // Изменено: уникальный суффикс для общей статистики
-    Route::get('/stats', [WebmasterController::class, 'dashboardStats'])
-        ->name('webmaster.dashboard.stats');
-});
+            Route::get('/offers/{id}/stats', [WebmasterController::class, 'offerStats'])
+                ->name('webmaster.offers.stats');
+
+            // Общая статистика вебмастера
+            Route::get('/stats', [WebmasterController::class, 'stats'])
+                ->name('webmaster.stats');
+        });
+
 
 
 

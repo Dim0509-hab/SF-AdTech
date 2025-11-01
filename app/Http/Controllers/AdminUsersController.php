@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 
 class AdminUsersController extends Controller
@@ -15,23 +14,23 @@ class AdminUsersController extends Controller
             abort(403, 'Доступ запрещён');
         }
     }
-public function assignRole(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+    public function assignRole(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
-    // Валидация роли (опционально)
-    $validRoles = ['advertiser', 'affiliate'];
-    if (!in_array($request->input('role'), $validRoles)) {
-        return redirect()->back()->with('error', 'Некорректная роль');
+        // Валидация роли (опционально)
+        $validRoles = ['advertiser', 'affiliate'];
+        if (!in_array($request->input('role'), $validRoles)) {
+            return redirect()->back()->with('error', 'Некорректная роль');
+        }
+
+        $user->role = $request->input('role');
+        $user->save();
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'Роль обновлена');
     }
-
-    $user->role = $request->input('role');
-    $user->save();
-
-    return redirect()
-        ->route('admin.users')
-        ->with('success', 'Роль обновлена');
-}
 
     public function __construct()
     {
@@ -50,19 +49,20 @@ public function assignRole(Request $request, $id)
             $query->where('email', 'like', '%' . $request->search . '%');
         }
 
-        $users = $query->paginate(20);
+         $users = User::where('role_id', '!=', 3) // исключаем админа (role_id = 3)
+                ->paginate(20);
 
         return view('admin.users', compact('users'));
     }
-    public function toggleStatus(Request $request, $id)
-{
-    // Логика переключения статуса
-    $user = User::findOrFail($id);
-    $user->active = !$user->active;
-    $user->save();
+        public function toggleStatus(Request $request, $id)
+    {
+        // Логика переключения статуса
+        $user = User::findOrFail($id);
+        $user->active = !$user->active;
+        $user->save();
 
-    return redirect()->route('admin.users')->with('success', 'Статус изменён');
-}
+        return redirect()->route('admin.users')->with('success', 'Статус изменён');
+    }
 
 
     public function toggleActive(int $id)

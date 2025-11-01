@@ -91,7 +91,7 @@
     </table>
 
     <!-- Ссылка назад -->
-    <a href="{{ route('webmaster.index') }}" class="btn btn-secondary">
+    <a href="{{ route('webmaster.offers') }}" class="btn btn-secondary">
         ← К списку офферов
     </a>
 </div>
