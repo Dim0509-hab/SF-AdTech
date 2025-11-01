@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use App\Models\Offer;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Conversion;
+use App\Models\Click;
 
 
 
@@ -99,7 +101,34 @@ class WebmasterController extends Controller
 
         return view('webmaster.stats', compact('stats', 'subscriptions'));
     }
+  public function dashboardStats()
+    {
+        $userId = Auth::id();
 
+        // Все офферы вебмастера
+        $offers = Offer::whereHas('webmasters', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
 
+        // Общая статистика
+        $totalStats = [
+            'total_offers' => $offers->count(),
+            'total_clicks' => Click::whereHas('offer.webmasters', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->count(),
+            'total_conversions' => Conversion::whereHas('offer.webmasters', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->count(),
+            'total_revenue' => Conversion::whereHas('offer.webmasters', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->sum('revenue'),
+        ];
+
+        return view('webmaster.stats', [
+            'offers' => $offers,
+            'totalStats' => $totalStats,
+            'isDashboardStats' => true,  // Флаг для шаблона
+        ]);
+    }
 }
 

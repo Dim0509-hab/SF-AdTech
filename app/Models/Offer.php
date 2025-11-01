@@ -14,8 +14,11 @@ class Offer extends Model
         'advertiser_id',
         'name',
         'price',
+        'description',
         'target_url',
         'themes',
+        'status',
+        'revenue_per_click',
         'active'
     ];
 
