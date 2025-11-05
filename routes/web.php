@@ -62,11 +62,9 @@ Route::middleware(['auth'])->group(function () {
 
     // === Вебмастер ===
             Route::prefix('webmaster')->group(function () {
-            // Главная страница офферов (ранее была 'index')
 
             Route::get('/webmaster', [WebmasterController::class, 'index'])
                 ->name('webmaster.index');
-
             Route::get('/offers', [WebmasterController::class, 'offers'])
                 ->name('webmaster.offers');
 
@@ -99,6 +97,8 @@ Route::middleware(['auth'])->group(function () {
     // Главная страница
     Route::get('/dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard');
+        Route::delete('admin/users/{id}', [AdminUsersController::class, 'destroy'])
+    ->name('admin.users.destroy');
 
     // Пользователи
     Route::get('/users', [AdminUsersController::class, 'index'])

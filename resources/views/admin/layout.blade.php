@@ -27,14 +27,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-                           href="{{ route('admin.dashboard') }}">Главная</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.revenue') ? 'active' : '' }}"
-                           href="{{ route('admin.revenue.index') }}">Доходы</a>
-                    </li>
+
+
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}"
                            href="{{ route('admin.users') }}">Пользователи</a>
@@ -44,7 +38,7 @@
                     <span class="navbar-text text-white me-3">
                         Привет, {{ Auth::user()->email }}!
                     </span>
-                    <a href="/logout" class="btn btn-outline-light btn-sm">Выход</a>
+                    <a href="{{ url('/admin/dashboard') }}" class="btn btn-outline-light btn-sm">Выход</a>
                 </div>
             </div>
         </div>

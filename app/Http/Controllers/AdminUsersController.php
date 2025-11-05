@@ -81,4 +81,18 @@ class AdminUsersController extends Controller
             return redirect()->back()->with('error', 'Ошибка при обновлении статуса: ' . $e->getMessage());
         }
     }
+
+    public function destroy($id)
+{
+    $user = User::findOrFail($id);
+
+    // Дополнительно можно проверить права:
+    // if (!auth()->user()->isAdmin()) {
+    //     return redirect()->back()->with('error', 'У вас нет прав.');
+    // }
+
+    $user->delete();
+
+    return redirect()->route('admin.users')->with('success', 'Пользователь удалён.');
+}
 }

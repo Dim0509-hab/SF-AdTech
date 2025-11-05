@@ -42,12 +42,12 @@ class Kernel extends HttpKernel
      * Middleware для маршрутов
      */
     protected $routeMiddleware = [
-    'auth' => \App\Http\Middleware\Authenticate::class,
-    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-    'role' => \App\Http\Middleware\RoleMiddleware::class,
-    'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-    'redirect.role' => \App\Http\Middleware\RedirectByRole::class, // ✅ Новое
-    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-    'role:advertiser' => \App\Http\Middleware\AdvertiserMiddleware::class,
-];
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'redirect.role' => \App\Http\Middleware\RedirectByRole::class, // ✅ Новое
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'role:advertiser' => \App\Http\Middleware\AdvertiserMiddleware::class,
+    ];
 }

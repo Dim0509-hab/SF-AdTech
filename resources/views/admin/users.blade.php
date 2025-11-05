@@ -37,11 +37,42 @@
                             {{ $user->active ? 'Заблокировать' : 'Активировать' }}
                         </button>
                     </form>
+                    <!-- Кнопка «Удалить» с модальным подтверждением -->
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ $user->id }}">
+                            Удалить
+                        </button>
+
                 </td>
             </tr>
         @endforeach
     </tbody>
-</table>
+    </table>
 
-</div>
+    </div>
+    @foreach($users as $user)
+        <!-- Модальное окно для удаления пользователя -->
+        <div class="modal fade" id="deleteUserModal{{ $user->id }}" tabindex="-1" aria-labelledby="deleteUserLabel{{ $user->id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteUserLabel{{ $user->id }}">Удалить пользователя</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить пользователя {{ $user->email }}?
+                        Это действие необратимо.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
 @endsection
