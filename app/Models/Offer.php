@@ -30,20 +30,33 @@ class Offer extends Model
 
     // 💼 Связь с рекламодателем
     public function advertiser()
-    {
-        return $this->belongsTo(User::class, 'advertiser_id');
-    }
+        {
+            return $this->belongsTo(User::class, 'advertiser_id');
+        }
 
     // 🌐 Связь с веб-мастерами
-    public function webmasters()
+        public function webmasters()
     {
-        return $this->belongsToMany(User::class,
-         'offer_webmaster',
-        'offer_id',
-         'webmaster_id')
-                    ->withTimestamps()
-                    ->withPivot('cost_per_click');
+        return $this->belongsToMany(
+            \App\Models\User::class,
+            'offer_webmaster',
+            'offer_id',
+            'webmaster_id'
+        )->withPivot('cost_per_click', 'agreed_price');
     }
+
+
+    public function subscribers()
+        {
+            return $this->belongsToMany(
+                \App\Models\User::class,
+                'offer_webmaster',
+                'offer_id',
+                'webmaster_id'
+            )->withPivot('cost_per_click', 'status', 'created_at');
+        }
+
+
 
     // 📈 Переходы по офферу
     public function clicks()
@@ -71,10 +84,7 @@ class Offer extends Model
     {
     return $this->hasMany(\App\Models\Conversion::class, 'offer_id', 'id');
     }
-        public function subscriptions()
-    {
-        return $this->hasMany(Subscription::class);
-    }
+
 
 
 }

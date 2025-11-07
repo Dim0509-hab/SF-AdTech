@@ -64,16 +64,12 @@ class WebmasterController extends Controller
     $user->subscriptions()->syncWithoutDetaching([
         $offerId => [
             'cost_per_click' => $validated['cost_per_click'],
-            'agreed_price'   => $validated['agreed_price'] ?? 0.00, // добавляем!
+            'agreed_price'   => $offer->price,
         ]
     ]);
 
     return redirect()->back()->with('success', 'Подписка оформлена!');
 }
-
-
-
-
     public function unsubscribe($id)
     {
          Auth::user()->subscriptions()->detach($id);
@@ -94,57 +90,63 @@ class WebmasterController extends Controller
         return view('webmaster.subscribed', compact('offers'));
     }
 
-    public function stats()
-    {
-        $webmasterId = Auth::id();
+public function stats()
+{
+    $userId = Auth::id();
+
+    $today = now()->startOfDay();
+    $month = now()->startOfMonth();
+    $year = now()->startOfYear();
+
+    // Получаем агрегированные данные одним запросом
+    $result = Click::where('webmaster_id', $userId)
+        ->selectRaw("
+            COUNT(*) as total_clicks,
+            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as today_clicks,
+            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as month_clicks,
+            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as year_clicks,
+            SUM(cost) as total_revenue,
+            SUM(CASE WHEN created_at >= ? THEN cost ELSE 0 END) as today_revenue,
+            SUM(CASE WHEN created_at >= ? THEN cost ELSE 0 END) as month_revenue,
+            SUM(CASE WHEN created_at >= ? THEN cost ELSE 0 END) as year_revenue
+        ", [$today, $month, $year, $today, $month, $year])
+        ->first();
+
+    // Теперь используем $result, а не $stats
+    $stats = [
+        'today' => [
+            'clicks'   => (int)    ($result?->today_clicks   ?? 0),
+            'revenue'  => round((float) ($result?->today_revenue  ?? 0), 2),
+        ],
+        'month' => [
+            'clicks'   => (int)    ($result?->month_clicks   ?? 0),
+            'revenue'  => round((float) ($result?->month_revenue  ?? 0), 2),
+        ],
+        'year' => [
+            'clicks'   => (int)    ($result?->year_clicks    ?? 0),
+            'revenue'  => round((float) ($result?->year_revenue   ?? 0), 2),
+        ],
+    ];
+
+    // Подписки с детализацией по офферам
+    $subscriptions = Auth::user()->subscriptions()
+        ->withCount([
+            'clicks as today_clicks' => fn($q) => $q->where('created_at', '>=', $today),
+            'clicks as month_clicks' => fn($q) => $q->where('created_at', '>=', $month),
+            'clicks as year_clicks'  => fn($q) => $q->where('created_at', '>=', $year),
+        ])
+        ->withSum([
+            'clicks as today_revenue' => fn($q) => $q->where('created_at', '>=', $today),
+            'clicks as month_revenue' => fn($q) => $q->where('created_at', '>=', $month),
+            'clicks as year_revenue'  => fn($q) => $q->where('created_at', '>=', $year),
+        ], 'cost')
+        ->get();
+
+    return view('webmaster.stats', compact('stats', 'subscriptions'));
+}
 
 
-        // Получаем подписки веб‑мастера с офферами и кликами
-        $subscriptions = Subscription::where('webmaster_id', $webmasterId)
-            ->with(['offer', 'clicks'])
-            ->get();
 
-        // Считаем статистику
-        $today = now()->startOfDay();
-        $month = now()->startOfMonth();
-        $year = now()->startOfYear();
-
-        $stats = [
-            'today' => [
-                'clicks' => 0,
-                'revenue' => 0,
-            ],
-            'month' => [
-                'clicks' => 0,
-                'revenue' => 0,
-            ],
-            'year' => [
-                'clicks' => 0,
-                'revenue' => 0,
-            ],
-        ];
-
-        foreach ($subscriptions as $sub) {
-            $pricePerClick = $sub->cost_per_click;
-
-            // Сегодня
-            $todayClicks = $sub->clicks->where('created_at', '>=', $today)->count();
-            $stats['today']['clicks'] += $todayClicks;
-            $stats['today']['revenue'] += $todayClicks * $pricePerClick;
-
-            // Месяц
-            $monthClicks = $sub->clicks->where('created_at', '>=', $month)->count();
-            $stats['month']['clicks'] += $monthClicks;
-            $stats['month']['revenue'] += $monthClicks * $pricePerClick;
-
-            // Год
-            $yearClicks = $sub->clicks->where('created_at', '>=', $year)->count();
-            $stats['year']['clicks'] += $yearClicks;
-            $stats['year']['revenue'] += $yearClicks * $pricePerClick;
-        }
-
-        return view('webmaster.stats', compact('stats', 'subscriptions'));
-    }
   public function dashboardStats()
     {
         $userId = Auth::id();

@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminOffersController;
 use App\Http\Controllers\AdminStatsController;
 use App\Http\Controllers\RedirectController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ClickController;
 
 // Главная
 Route::get('/', function () {
@@ -40,9 +41,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-
-
-
     // === Рекламодатель ===
     Route::prefix('advertiser')->group(function () {
         Route::get('/offers', [AdvertiserController::class, 'index'])->name('advertiser.index');
@@ -67,6 +65,9 @@ Route::middleware(['auth'])->group(function () {
                 ->name('webmaster.index');
             Route::get('/offers', [WebmasterController::class, 'offers'])
                 ->name('webmaster.offers');
+
+                // Трекер кликов: /go/abc123?webmaster_id=5
+            Route::get('/go/{link_hash}', [ClickController::class, 'track'])->name('click.track');
 
                 // Только подписанные офферы (статистика и управление)
             Route::get('webmaster/subscribed', [WebmasterController::class, 'subscribed'])

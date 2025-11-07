@@ -61,41 +61,27 @@
             <tbody>
                 @foreach($subscriptions as $sub)
                     <tr>
-                        <td>{{ $sub->offer->name }}</td>
-                        <td>{{ number_format($sub->cost_per_click, 2) }} ₽</td>
+                        <td>{{ $sub->name }}</td>
+                        <td>{{ number_format($sub->pivot->cost_per_click, 2) }} ₽</td>
 
-                        <!-- Сегодня -->
-                        <td class="text-center">
-                            <strong>{{ $sub->clicks->where('created_at', '>=', now()->startOfDay())->count() }}</strong><br>
-                            <small class="text-muted">
-                                {{ number_format(
-                                    $sub->clicks->where('created_at', '>=', now()->startOfDay())->count() * $sub->cost_per_click,
-                                    2
-                                ) }} ₽
-                            </small>
-                        </td>
+                                                    <!-- Сегодня -->
+                            <td class="text-center">
+                                <strong>{{ $sub->today_clicks ?? 0 }}</strong><br>
+                                <small class="text-muted">{{ number_format($sub->today_revenue ?? 0, 2) }} ₽</small>
+                            </td>
 
-                        <!-- Месяц -->
-                        <td class="text-center">
-                            <strong>{{ $sub->clicks->where('created_at', '>=', now()->startOfMonth())->count() }}</strong><br>
-                            <small class="text-muted">
-                                {{ number_format(
-                                    $sub->clicks->where('created_at', '>=', now()->startOfMonth())->count() * $sub->cost_per_click,
-                                    2
-                                ) }} ₽
-                            </small>
-                        </td>
+                            <!-- Месяц -->
+                            <td class="text-center">
+                                <strong>{{ $sub->month_clicks ?? 0 }}</strong><br>
+                                <small class="text-muted">{{ number_format($sub->month_revenue ?? 0, 2) }} ₽</small>
+                            </td>
 
-                        <!-- Год -->
-                        <td class="text-center">
-                            <strong>{{ $sub->clicks->where('created_at', '>=', now()->startOfYear())->count() }}</strong><br>
-                            <small class="text-muted">
-                                {{ number_format(
-                                    $sub->clicks->where('created_at', '>=', now()->startOfYear())->count() * $sub->cost_per_click,
-                                    2
-                                ) }} ₽
-                            </small>
-                        </td>
+                            <!-- Год -->
+                            <td class="text-center">
+                                <strong>{{ $sub->year_clicks ?? 0 }}</strong><br>
+                                <small class="text-muted">{{ number_format($sub->year_revenue ?? 0, 2) }} ₽</small>
+                            </td>
+
                     </tr>
                 @endforeach
             </tbody>
