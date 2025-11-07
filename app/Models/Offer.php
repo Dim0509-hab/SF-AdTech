@@ -37,9 +37,12 @@ class Offer extends Model
     // 🌐 Связь с веб-мастерами
     public function webmasters()
     {
-        return $this->belongsToMany(User::class, 'offer_webmaster', 'offer_id', 'webmaster_id')
+        return $this->belongsToMany(User::class,
+         'offer_webmaster',
+        'offer_id',
+         'webmaster_id')
                     ->withTimestamps()
-                    ->withPivot('agreed_price');
+                    ->withPivot('cost_per_click');
     }
 
     // 📈 Переходы по офферу

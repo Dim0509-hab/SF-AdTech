@@ -68,6 +68,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/offers', [WebmasterController::class, 'offers'])
                 ->name('webmaster.offers');
 
+                // Только подписанные офферы (статистика и управление)
+            Route::get('webmaster/subscribed', [WebmasterController::class, 'subscribed'])
+                ->name('webmaster.offers.subscribed');
+
             // Подписка/отписка
             Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])
                 ->name('webmaster.offers.subscribe');

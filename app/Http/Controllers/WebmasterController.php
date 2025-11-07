@@ -50,12 +50,30 @@ class WebmasterController extends Controller
         return view('webmaster.index', compact('offers', 'subs'));
     }
 
-    public function subscribe($id)
-    {
-         Auth::user()
-        ->subscriptions()->attach($id, ['agreed_price'=>Offer::findOrFail($id)->price]);
-         return back()->with('success','Подписано');
-     }
+   public function subscribe(Request $request, $offerId)
+{
+    $validated = $request->validate([
+        'cost_per_click' => ['required', 'numeric', 'min:0.01'],
+        'agreed_price'     => ['nullable', 'numeric', 'min:0'], // если есть в форме
+    ]);
+
+    $user = Auth::user();
+    $offer = Offer::findOrFail($offerId);
+
+    // Подписываемся или обновляем подписку
+    $user->subscriptions()->syncWithoutDetaching([
+        $offerId => [
+            'cost_per_click' => $validated['cost_per_click'],
+            'agreed_price'   => $validated['agreed_price'] ?? 0.00, // добавляем!
+        ]
+    ]);
+
+    return redirect()->back()->with('success', 'Подписка оформлена!');
+}
+
+
+
+
     public function unsubscribe($id)
     {
          Auth::user()->subscriptions()->detach($id);
@@ -66,7 +84,15 @@ class WebmasterController extends Controller
          $token = 'offer_'.$id.'_wm_'.Auth::id();
          $link = url('/r/'.$token); return view('webmaster.link', compact('link'));
     }
+    public function subscribed()
+    {
+        // Только подписанные офферы + подсчёт подписчиков
+        $offers = Auth::user()->offers()
+            ->withCount('webmasters') // Количество подписчиков на каждый оффер
+            ->get();
 
+        return view('webmaster.subscribed', compact('offers'));
+    }
 
     public function stats()
     {

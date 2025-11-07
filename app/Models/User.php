@@ -37,17 +37,24 @@ class User extends Authenticatable
     ];
 
     // Отношения
-    public function offers()
-    {
-        return $this->hasMany(\App\Models\Offer::class, 'advertiser_id');
-    }
+   public function offers()
+{
+    return $this->belongsToMany(
+        Offer::class,
+        'offer_webmaster',          // Название таблицы подписок
+        'webmaster_id',          // Внешний ключ для пользователя
+        'offer_id'              // Внешний ключ для оффера
+    )->withPivot('agreed_price'); // Если нужно получать agreed_price
+}
+
 
     public function subscriptions()
-    {
-        return $this->belongsToMany(\App\Models\Offer::class, 'offer_webmaster', 'webmaster_id', 'offer_id')
-            ->withTimestamps()
-            ->withPivot('agreed_price');
-    }
+{
+    return $this->belongsToMany(\App\Models\Offer::class, 'offer_webmaster', 'webmaster_id', 'offer_id')
+        ->withTimestamps() // ← автоматически добавляет created_at и updated_at
+        ->withPivot('cost_per_click'); // ← только пользовательские поля
+}
+
 
     public function clicks()
     {
