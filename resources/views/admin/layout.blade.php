@@ -16,33 +16,7 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-    <!-- Навигационная панель -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                Админ-панель
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}"
-                           href="{{ route('admin.users') }}">Пользователи</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <span class="navbar-text text-white me-3">
-                        Привет, {{ Auth::user()->email }}!
-                    </span>
-                    <a href="{{ url('/admin/dashboard') }}" class="btn btn-outline-light btn-sm">Выход</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
     <!-- Основное содержимое -->
     <main class="container-fluid mt-4 px-4">

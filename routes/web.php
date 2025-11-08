@@ -58,34 +58,31 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-  // === Вебмастер ===
-Route::prefix('webmaster')->middleware(['auth'])->group(function () {
-    // Главная: /webmaster/offers
-    Route::get('/offers', [WebmasterController::class, 'index'])
-        ->name('webmaster.offers');
+         // === Вебмастер ===
+    Route::prefix('webmaster')->middleware(['auth'])->group(function () {
+        // Главная: /webmaster/offers
+        Route::get('/offers', [WebmasterController::class, 'index'])
+            ->name('webmaster.offers');
 
-    // Мои подписки: /webmaster/subscribed
-    Route::get('/subscribed', [WebmasterController::class, 'subscribed'])
-        ->name('webmaster.offers.subscribed');
+        // Мои подписки: /webmaster/subscribed
+        Route::get('/subscribed', [WebmasterController::class, 'subscribed'])
+            ->name('webmaster.offers.subscribed');
 
-    // Подписка/отписка
-    Route::post('/{offerId}/subscribe', [WebmasterController::class, 'subscribe'])
-        ->name('webmaster.offers.subscribe');
+        // Подписка/отписка
+        Route::post('/{offerId}/subscribe', [WebmasterController::class, 'subscribe'])
+            ->name('webmaster.offers.subscribe');
 
-    Route::post('/{offerId}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
-        ->name('webmaster.offers.unsubscribe');
+        Route::post('/{offerId}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
+            ->name('webmaster.offers.unsubscribe');
 
-    // Генерация ссылки
-    Route::get('/{offerId}/link', [WebmasterController::class, 'getLink'])
-        ->name('webmaster.offers.link');
+        // Генерация ссылки
+        Route::get('/{offerId}/link', [WebmasterController::class, 'getLink'])
+            ->name('webmaster.offers.link');
 
-        // Общая статистика
-    Route::get('/stats', [WebmasterController::class, 'stats'])
-        ->name('webmaster.stats');
-});
-
-
-
+            // Общая статистика
+        Route::get('/stats', [WebmasterController::class, 'stats'])
+            ->name('webmaster.stats');
+    });
 
 
 
@@ -122,5 +119,6 @@ Route::prefix('webmaster')->middleware(['auth'])->group(function () {
         // Маршрут для экспорта в CSV
     Route::get('/revenue/export', [AdminStatsController::class, 'export'])
         ->name('admin.revenue.export');
-});
+    });
+
 });
