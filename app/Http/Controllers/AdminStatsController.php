@@ -7,7 +7,6 @@ use App\Models\Offer;
 use Illuminate\Http\Request;
 use App\Models\Conversion;
 use Illuminate\Support\Facades\DB;
-
 use Carbon\Carbon;
 use App\Models\User;
 

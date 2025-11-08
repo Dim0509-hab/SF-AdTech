@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
         } elseif ($user->role === 'advertiser') {
             return redirect()->route('advertiser.index');
         } else {
-            return redirect()->route('webmaster.index');
+            return redirect()->route('webmaster.offers');
         }
     })->name('dashboard');
 
@@ -58,39 +58,32 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    // === Вебмастер ===
-            Route::prefix('webmaster')->group(function () {
+  // === Вебмастер ===
+Route::prefix('webmaster')->middleware(['auth'])->group(function () {
+    // Главная: /webmaster/offers
+    Route::get('/offers', [WebmasterController::class, 'index'])
+        ->name('webmaster.offers');
 
-            Route::get('/webmaster', [WebmasterController::class, 'index'])
-                ->name('webmaster.index');
-            Route::get('/offers', [WebmasterController::class, 'offers'])
-                ->name('webmaster.offers');
+    // Мои подписки: /webmaster/subscribed
+    Route::get('/subscribed', [WebmasterController::class, 'subscribed'])
+        ->name('webmaster.offers.subscribed');
 
-                // Трекер кликов: /go/abc123?webmaster_id=5
-            Route::get('/go/{link_hash}', [ClickController::class, 'track'])->name('click.track');
+    // Подписка/отписка
+    Route::post('/{offerId}/subscribe', [WebmasterController::class, 'subscribe'])
+        ->name('webmaster.offers.subscribe');
 
-                // Только подписанные офферы (статистика и управление)
-            Route::get('webmaster/subscribed', [WebmasterController::class, 'subscribed'])
-                ->name('webmaster.offers.subscribed');
+    Route::post('/{offerId}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
+        ->name('webmaster.offers.unsubscribe');
 
-            // Подписка/отписка
-            Route::post('/offers/{id}/subscribe', [WebmasterController::class, 'subscribe'])
-                ->name('webmaster.offers.subscribe');
+    // Генерация ссылки
+    Route::get('/{offerId}/link', [WebmasterController::class, 'getLink'])
+        ->name('webmaster.offers.link');
 
-            Route::post('/offers/{id}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
-                ->name('webmaster.offers.unsubscribe');
+        // Общая статистика
+    Route::get('/stats', [WebmasterController::class, 'stats'])
+        ->name('webmaster.stats');
+});
 
-            // Получение ссылки и статистики по офферу
-            Route::get('/offers/{id}/link', [WebmasterController::class, 'getLink'])
-                ->name('webmaster.offers.link');
-
-            Route::get('/offers/{id}/stats', [WebmasterController::class, 'offerStats'])
-                ->name('webmaster.offers.stats');
-
-            // Общая статистика вебмастера
-            Route::get('/stats', [WebmasterController::class, 'stats'])
-                ->name('webmaster.stats');
-        });
 
 
 

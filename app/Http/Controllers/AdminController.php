@@ -32,7 +32,7 @@ class AdminController extends Controller
     /**
      * Главная страница админки.
      */
-        public function dashboard()
+    public function dashboard()
     {
         $userCount = User::count();
         $offerCount = Offer::count();
@@ -44,25 +44,29 @@ class AdminController extends Controller
     }
 
     /**
-     * Список всех пользователей.
+     * Список всех пользователей (с пагинацией).
      */
     public function users()
     {
-        $users = User::orderBy('id')->get();
+        $users = User::orderBy('id')->paginate(20);
         return view('admin.users', compact('users'));
     }
 
     /**
-     * 🆕 Список пользователей на модерации (новые рекламодатели и веб-мастеры)
+     * Список пользователей на модерации (по дате создания).
      */
     public function pendingUsers()
     {
-        $pendingUsers = User::where('status', 'pending')->orderBy('created_at')->get();
+        $pendingUsers = User::where('status', 'pending')
+            ->whereIn('role', ['advertiser', 'webmaster'])
+            ->orderBy('created_at', 'asc')
+            ->paginate(20);
+
         return view('admin.pending', compact('pendingUsers'));
     }
 
     /**
-     * 🆕 Одобрить пользователя (авторизовать на работу)
+     * Одобрить пользователя.
      */
     public function approveUser($id)
     {
@@ -72,13 +76,17 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Можно одобрять только рекламодателей и веб-мастеров.');
         }
 
+        if ($user->status !== 'pending') {
+            return redirect()->back()->with('info', 'Этот пользователь уже имеет статус: ' . $user->status);
+        }
+
         $user->update(['status' => 'approved']);
 
         return redirect()->back()->with('success', "✅ Пользователь «{$user->name}» одобрен и может начать работу.");
     }
 
     /**
-     * 🆕 Отклонить пользователя
+     * Отклонить пользователя.
      */
     public function rejectUser($id)
     {
@@ -88,13 +96,35 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Можно отклонять только рекламодателей и веб-мастеров.');
         }
 
+        if ($user->status !== 'pending') {
+            return redirect()->back()->with('info', 'Этот пользователь уже имеет статус: ' . $user->status);
+        }
+
         $user->update(['status' => 'rejected']);
 
         return redirect()->back()->with('info', "❌ Пользователь «{$user->name}» отклонён.");
     }
 
     /**
-     * Список всех офферов с информацией о рекламодателях.
+     * Переключить активность пользователя (с защитой от self-block).
+     */
+    public function toggleActive(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Вы не можете заблокировать сами себя.');
+        }
+
+        $user->active = !$user->active;
+        $user->save();
+
+        $status = $user->active ? 'активирован' : 'заблокирован';
+        return redirect()->back()->with('success', "Пользователь «{$user->name}» {$status}.");
+    }
+
+    /**
+     * Список всех офферов.
      */
     public function offers()
     {
@@ -102,26 +132,5 @@ class AdminController extends Controller
         return view('admin.offers', compact('offers'));
     }
 
-    /**
-     * Включение/отключение пользователя (активен/не активен).
-     */
-    public function toggleActive(int $id)
-    {
-        $user = User::findOrFail($id);
-        $user->active = !$user->active;
-        $user->save();
 
-        return redirect()->back()->with('success', 'Статус пользователя обновлен.');
-    }
-
-    /**
-     * Просмотр системной статистики.
-     */
-    public function systemStats()
-    {
-        $offerCount = Offer::count();
-        $userCount = User::count();
-
-        return view('admin.stats', compact('offerCount', 'userCount'));
-    }
 }

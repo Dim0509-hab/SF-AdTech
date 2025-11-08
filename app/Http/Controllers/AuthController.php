@@ -20,97 +20,91 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $r)
+    public function register(Request $request)
     {
-        $validated = $r->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|min:6',
             'role' => 'required|in:advertiser,webmaster',
         ]);
 
         $role = Role::where('name', $validated['role'])->firstOrFail();
 
-        $user = User::create([
+        User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'active' => 1,
             'role' => $validated['role'],
             'role_id' => $role->id,
-            'status' => 'pending', // 🔥 Добавлено: статус по умолчанию
+            'status' => 'pending',
         ]);
-
-        // ❌ Не входить автоматически!
-        // Auth::login($user); ← УДАЛИТЬ
 
         return redirect()->route('login')->with('message', 'Регистрация успешна Ваш аккаунт ожидает одобрения администратором.');
     }
 
-
-    public function login(Request $r)
+    public function login(Request $request)
     {
-        $r->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required',
         ]);
 
-        $user = User::where('email', $r->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        // 🔥 Проверка: существует ли пользователь и одобрен ли
-        if (!$user || !Hash::check($r->password, $user->password)) {
-            return back()->withErrors(['email' => 'Неправильные учётные данные'])->withInput();
-        }
-
-        // 🔥 Проверка статуса
-        if ($user->status !== 'approved') {
+        // Проверка: пользователь существует и пароль верный
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return back()->withErrors([
-                'email' => 'Ваш аккаунт ожидает одобрения администратором. Пожалуйста, подождите уведомления.'
+                'email' => 'Неправильные учётные данные.',
             ])->withInput();
         }
 
-        // ✅ Всё ок — вход разрешён
+        // Проверка статуса
+        if ($user->status !== 'approved') {
+            return back()->withErrors([
+                'email' => 'Ваш аккаунт ожидает одобрения администратором. Пожалуйста, подождите уведомления.',
+            ])->withInput();
+        }
+        if (! $user->active) {
+        return back()->withErrors([
+            'email' => 'Ваш аккаунт временно заблокирован администратором. Обратитесь в поддержку.'
+        ])->withInput();
+        }
+
+        // Вход разрешён
         Auth::login($user);
-        $r->session()->regenerate();
+        $request->session()->regenerate();
 
         return $this->afterLoginRedirect($user);
     }
 
-
-    public function logout(Request $r)
+    public function logout(Request $request)
     {
         Auth::logout();
-        $r->session()->invalidate();
-        $r->session()->regenerateToken();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/');
     }
 
-    public function afterLoginRedirect($user)
-{
-    // Получаем роль пользователя
-    $userRole = $user->role;
+    protected function afterLoginRedirect($user)
+    {
+        if (! $user->role) {
+            return redirect()->route('webmaster.offers')->with('error', 'Роль не назначена.');
+        }
 
-    // Проверяем, существует ли роль
-    if (is_null($userRole)) {
-        return redirect()->route('webmaster.offers')
-            ->with('error', 'Роль не назначена');
-    }
+        $role = strtolower($user->role);
 
-    // Приводим роль к нижнему регистру для единообразия
-    $userRole = strtolower($userRole);
-
-    // Проверяем значение роли и перенаправляем
-    switch ($userRole) {
-        case 'admin':
+        if ($role === 'admin') {
             return redirect()->route('admin.dashboard');
+        }
 
-        case 'advertiser':
+        if ($role === 'advertiser') {
             return redirect()->route('advertiser.index');
+        }
 
-        default:
-    return redirect()->route('webmaster.offers');
-
+        return redirect()->route('webmaster.offers');
     }
-    }
-
 }

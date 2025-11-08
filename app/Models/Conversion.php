@@ -5,6 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * @property int $id
+ * @property string|null $status
+ * @property int $offer_id
+ * @property \Illuminate\Support\Carbon $conversion_date
+ * @property numeric $revenue
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property int|null $user_id
+ * @property-read \App\Models\Offer $offer
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereConversionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereOfferId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Conversion whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Conversion extends Model
 {
     use HasFactory;

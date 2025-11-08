@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
 
@@ -12,6 +13,36 @@ use Illuminate\Validation\ValidationException;
  * @property string $email
  * @property string $role
  * @property bool $active
+ * @property string|null $email_verified_at
+ * @property string $password
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int|null $role_id
+ * @property string $status Статус модерации: ожидает, одобрен, отклонён
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Click> $clicks
+ * @property-read int|null $clicks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Offer> $offers
+ * @property-read int|null $offers_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User approved()
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRoleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class User extends Authenticatable
 {
@@ -37,27 +68,28 @@ class User extends Authenticatable
         'remember_token'
     ];
 
-    // Отношения
-    public function offers()
+
+
+public function offers(): BelongsToMany
     {
         return $this->belongsToMany(
-            Offer::class,
-            'offer_webmaster',          // Название таблицы подписок
-            'webmaster_id',          // Внешний ключ для пользователя
-            'offer_id'              // Внешний ключ для оффера
-        )->withPivot('agreed_price'); // Если нужно получать agreed_price
+            \App\Models\Offer::class,     // модель
+            'offer_webmaster',            // имя pivot-таблицы
+            'webmaster_id',               // внешний ключ текущей модели (User)
+            'offer_id'                    // внешний ключ целевой модели (Offer)
+        )
+        ->withPivot([
+            'cost_per_click',
+            'agreed_price',
+            'status',
+            'created_at'
+        ])
+        ->withTimestamps()
+        ->as('subscription'); // теперь $offer->subscription->cost_per_click
     }
 
 
-        public function subscriptions()
-    {
-        return $this->belongsToMany(\App\Models\Offer::class,
-         'offer_webmaster',
-         'webmaster_id',
-         'offer_id')
-            ->withTimestamps() // ← автоматически добавляет created_at и updated_at
-            ->withPivot('cost_per_click'); // ← только пользовательские поля
-    }
+
         // Скоупы для удобства
     public function scopePending($query)
     {

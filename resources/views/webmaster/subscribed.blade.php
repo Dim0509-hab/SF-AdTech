@@ -4,7 +4,7 @@
 <div class="container">
     <h2 class="mb-4">Мои подписанные офферы</h2>
 
-    <a href="{{ route('webmaster.index') }}" class="btn btn-secondary mb-3">
+    <a href="{{ route('webmaster.offers') }}" class="btn btn-secondary mb-3">
         Все офферы
     </a>
     <a href="{{ route('webmaster.stats') }}" class="btn btn-info mb-3">
