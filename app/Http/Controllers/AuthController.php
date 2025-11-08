@@ -20,32 +20,33 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-   public function register(Request $r)
-{
-    // 1. Валидация входных данных
-    $validated = $r->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6',
-        'role' => 'required|in:advertiser,webmaster',
-    ]);
+    public function register(Request $r)
+    {
+        $validated = $r->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'role' => 'required|in:advertiser,webmaster',
+        ]);
 
-    // 2. Получаем роль из таблицы roles по строковому имени
-    $role = Role::where('name', $validated['role'])->firstOrFail();
+        $role = Role::where('name', $validated['role'])->firstOrFail();
 
-    // 3. Создаём пользователя
-    $user = User::create([
-        'name' => $validated['name'],
-        'email' => $validated['email'],
-        'password' => Hash::make($validated['password']),
-        'active' => 1,
-        'role' => $validated['role'],
-        'role_id' => $role->id,
-    ]);
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'active' => 1,
+            'role' => $validated['role'],
+            'role_id' => $role->id,
+            'status' => 'pending', // 🔥 Добавлено: статус по умолчанию
+        ]);
 
-    Auth::login($user);
-    return $this->afterLoginRedirect($user);
+        // ❌ Не входить автоматически!
+        // Auth::login($user); ← УДАЛИТЬ
+
+        return redirect()->route('login')->with('message', 'Регистрация успешна Ваш аккаунт ожидает одобрения администратором.');
     }
+
 
     public function login(Request $r)
     {
@@ -54,13 +55,27 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (Auth::attempt($r->only('email', 'password'))) {
-            $r->session()->regenerate();
-            $user = Auth::user(); // Получаем авторизованного пользователя
-            return $this->afterLoginRedirect($user); // Передаем пользователя
+        $user = User::where('email', $r->email)->first();
+
+        // 🔥 Проверка: существует ли пользователь и одобрен ли
+        if (!$user || !Hash::check($r->password, $user->password)) {
+            return back()->withErrors(['email' => 'Неправильные учётные данные'])->withInput();
         }
-        return back()->withErrors(['email' => 'Неправильные учетные данные'])->withInput();
+
+        // 🔥 Проверка статуса
+        if ($user->status !== 'approved') {
+            return back()->withErrors([
+                'email' => 'Ваш аккаунт ожидает одобрения администратором. Пожалуйста, подождите уведомления.'
+            ])->withInput();
+        }
+
+        // ✅ Всё ок — вход разрешён
+        Auth::login($user);
+        $r->session()->regenerate();
+
+        return $this->afterLoginRedirect($user);
     }
+
 
     public function logout(Request $r)
     {
@@ -88,13 +103,13 @@ class AuthController extends Controller
     switch ($userRole) {
         case 'admin':
             return redirect()->route('admin.dashboard');
-            break;
+
         case 'advertiser':
             return redirect()->route('advertiser.index');
-            break;
+
         default:
     return redirect()->route('webmaster.offers');
-            break;
+
     }
     }
 

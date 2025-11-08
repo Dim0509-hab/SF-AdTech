@@ -19,6 +19,7 @@ class Offer extends Model
         'themes',
         'status',
         'revenue_per_click',
+        'link_hash',
         'active'
     ];
 

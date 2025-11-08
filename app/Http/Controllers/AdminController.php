@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Контроллер для административной панели SF-AdTech.
- * @property \App\Models\User $user
  * Управление пользователями, офферами и системной статистикой.
  */
 class AdminController extends Controller
 {
-            protected function authorizeUser()
+    protected function authorizeUser()
     {
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Доступ запрещён');
@@ -29,23 +28,23 @@ class AdminController extends Controller
             return $next($request);
         });
     }
+
     /**
      * Главная страница админки.
-     *
-     * @return \Illuminate\View\View
      */
-    public function dashboard()
+        public function dashboard()
     {
         $userCount = User::count();
         $offerCount = Offer::count();
+        $pendingCount = User::where('status', 'pending')
+            ->whereIn('role', ['advertiser', 'webmaster'])
+            ->count();
 
-        return view('admin.dashboard', compact('userCount', 'offerCount'));
+        return view('admin.dashboard', compact('userCount', 'offerCount', 'pendingCount'));
     }
 
     /**
      * Список всех пользователей.
-     *
-     * @return \Illuminate\View\View
      */
     public function users()
     {
@@ -54,9 +53,48 @@ class AdminController extends Controller
     }
 
     /**
+     * 🆕 Список пользователей на модерации (новые рекламодатели и веб-мастеры)
+     */
+    public function pendingUsers()
+    {
+        $pendingUsers = User::where('status', 'pending')->orderBy('created_at')->get();
+        return view('admin.pending', compact('pendingUsers'));
+    }
+
+    /**
+     * 🆕 Одобрить пользователя (авторизовать на работу)
+     */
+    public function approveUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        if (!in_array($user->role, ['advertiser', 'webmaster'])) {
+            return redirect()->back()->with('error', 'Можно одобрять только рекламодателей и веб-мастеров.');
+        }
+
+        $user->update(['status' => 'approved']);
+
+        return redirect()->back()->with('success', "✅ Пользователь «{$user->name}» одобрен и может начать работу.");
+    }
+
+    /**
+     * 🆕 Отклонить пользователя
+     */
+    public function rejectUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        if (!in_array($user->role, ['advertiser', 'webmaster'])) {
+            return redirect()->back()->with('error', 'Можно отклонять только рекламодателей и веб-мастеров.');
+        }
+
+        $user->update(['status' => 'rejected']);
+
+        return redirect()->back()->with('info', "❌ Пользователь «{$user->name}» отклонён.");
+    }
+
+    /**
      * Список всех офферов с информацией о рекламодателях.
-     *
-     * @return \Illuminate\View\View
      */
     public function offers()
     {
@@ -66,9 +104,6 @@ class AdminController extends Controller
 
     /**
      * Включение/отключение пользователя (активен/не активен).
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function toggleActive(int $id)
     {
@@ -80,9 +115,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Просмотр системной статистики (например, переходы и ошибки).
-     *
-     * @return \Illuminate\View\View
+     * Просмотр системной статистики.
      */
     public function systemStats()
     {

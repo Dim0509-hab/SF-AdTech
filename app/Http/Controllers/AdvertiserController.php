@@ -10,6 +10,7 @@ use App\Models\View;
 use App\Models\AdSpend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AdvertiserController extends Controller
 {
@@ -30,8 +31,6 @@ class AdvertiserController extends Controller
         return $next($request);
     });
     }
-
-
     /**
      * Главная страница рекламодателя
      */
@@ -52,31 +51,38 @@ class AdvertiserController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0.01',
-            'target_url' => 'required|url|active_url',
-            'themes' => 'array|nullable'
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'price' => 'required|numeric|min:0.01',
+        'target_url' => 'required|url|active_url',
+        'themes' => 'array|nullable'
+    ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        Offer::create([
-            'advertiser_id' => Auth::id(),
-            'name' => $request->name,
-            'price' => $request->price,
-            'target_url' => $request->target_url,
-            'themes' => $request->input('themes', []),
-            'active' => true,
-        ]);
-
-        return redirect()
-            ->route('advertiser.index')
-            ->with('success', 'Оффер создан!');
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
     }
+
+    // Генерируем уникальный link_hash
+    $linkHash = '';
+    do {
+        $linkHash = Str::random(6); // например: "a1b2c3"
+    } while (Offer::where('link_hash', $linkHash)->exists());
+
+    Offer::create([
+        'advertiser_id' => Auth::id(),
+        'name' => $request->name,
+        'price' => $request->price,
+        'target_url' => $request->target_url,
+        'themes' => $request->input('themes', []),
+        'active' => true,
+        'link_hash' => $linkHash, // ✅ Теперь переменная определена
+    ]);
+
+    return redirect()
+        ->route('advertiser.index')
+        ->with('success', 'Оффер создан!');
+}
 
     public function destroy($id)
     {

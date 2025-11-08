@@ -31,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
         $user = Auth::user();
 
         if ($user && $user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('dashboard');
         } elseif ($user->role === 'advertiser') {
             return redirect()->route('advertiser.index');
         } else {
@@ -104,6 +104,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.dashboard');
         Route::delete('admin/users/{id}', [AdminUsersController::class, 'destroy'])
     ->name('admin.users.destroy');
+            // Одобрение пользователя
+    Route::get('/pending', [AdminController::class, 'pendingUsers'])->name('admin.pending');
+    Route::post('/approve/{id}', [AdminController::class, 'approveUser'])->name('admin.approve');
+    Route::post('/reject/{id}', [AdminController::class, 'rejectUser'])->name('admin.reject');
 
     // Пользователи
     Route::get('/users', [AdminUsersController::class, 'index'])
