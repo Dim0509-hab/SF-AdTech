@@ -55,12 +55,20 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'email',
-        'password',
-        'role',
-        'role_id',
-        'status',
-        'active'
+    'email',
+    'password',
+    'role',
+    'status',
+    'active',
+    'balance',
+    'hold',
+    'payment_method',
+    'payout_details',
+    'api_token',
+    'referral_code',
+    'registered_ip',
+    'user_agent',
+    'referrer_id',
     ];
 
     protected $hidden = [
@@ -130,10 +138,14 @@ public function offers(): BelongsToMany
     }
 
 
-    public function isWebmaster()
-    {
-        return $this->role === self::ROLE_WEBMASTER;
-    }
+    public function isWebmaster(): bool
+{
+    return $this->role === 'webmaster' && $this->status === 'approved';
+}
+public function isApproved(): bool
+{
+    return $this->status === 'approved';
+}
 
     // Проверка активности пользователя
     public function isActive()

@@ -45,7 +45,17 @@ class Click extends Model
     'cost',
     'user_agent',
     'count',
+     'click_token',
+       'ip',
+    'clicked_at',
+     'redirected',
+      'redirected_at',
+       'final_url',
+    'redirect_attempts',
+     'redirect_error'
 ];
+
+
 
     protected $dates = ['created_at'];
     protected $table = 'clicks';

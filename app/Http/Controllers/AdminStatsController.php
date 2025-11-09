@@ -41,7 +41,7 @@ class AdminStatsController extends Controller
         $avgRevenue = $countConversions > 0 ? $totalRevenue / $countConversions : 0;
 
         // 4. Доход по офферам (топ-5)
-        $revenueByOffer = Conversion::select('offer_id', DB::raw('SUM(revenue) as total_revenue'))
+        $revenueByOffer = Conversion::select(['offer_id', DB::raw('SUM(revenue) as total_revenue')])
             ->whereBetween('created_at', [$from, $to])
             ->where('status', $status)
             ->groupBy('offer_id')
@@ -51,7 +51,7 @@ class AdminStatsController extends Controller
             ->get();
 
         // 5. Доход по пользователям (топ-5)
-        $revenueByUser = Conversion::select('user_id', DB::raw('SUM(revenue) as total_revenue'))
+        $revenueByUser = Conversion::select(columns: ['user_id', DB::raw('SUM(revenue) as total_revenue')])
             ->whereBetween('created_at', [$from, $to])
             ->where('status', $status)
             ->groupBy('user_id')
@@ -67,10 +67,10 @@ class AdminStatsController extends Controller
             ->orderBy('date', 'desc')
             ->get();
 
-        // 7. Уникальные ссылки
-        $uniqueLinks = Click::whereNotNull('link_hash')
-            ->distinct('link_hash')
-            ->count('link_hash');
+        $uniqueLinks = Click::select(['offer_id', 'webmaster_id'])
+            ->distinct()
+            ->count();
+
 
         // 8. Последние отказы
         $rejections = Rejection::with(['webmaster:id,name', 'offer:id,name'])

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Services\LinkGeneratorService;
 use Illuminate\Http\Request;
 use App\Models\Offer;
 use Illuminate\Support\Facades\Auth;
@@ -94,11 +94,39 @@ class WebmasterController extends Controller
     // === Генерация партнёрской ссылки ===
     public function getLink($offerId)
     {
-        $offer = Offer::findOrFail($offerId);
-        $token = "offer_{$offerId}_wm_" . Auth::id();
-        $link = url('/r/' . $token);
+        $webmasterId = Auth::id(); // текущий авторизованный веб-мастер
 
-        return view('webmaster.link', compact('link', 'offer'));
+        // Проверяем, существует ли оффер и подписка
+        $offerExists = DB::table('offers')->where('id', $offerId)->exists();
+
+        if (!$offerExists) {
+            abort(404, 'Оффер не найден');
+        }
+
+        $isSubscribed = DB::table('offer_webmaster')
+            ->where('offer_id', $offerId)
+            ->where('webmaster_id', $webmasterId)
+            ->exists();
+
+        if (!$isSubscribed) {
+            abort(403, 'Вы не подписаны на этот оффер');
+        }
+
+        // Генерируем ссылку через сервис
+        $service = new LinkGeneratorService();
+        $link = $service->generate(
+            offerId: $offerId,
+            webmasterId: $webmasterId,
+            utm: [
+                'utm_source' => 'webmaster_cabinet',
+                'utm_medium' => 'link_tab',
+                'utm_campaign' => 'direct'
+            ],
+            secure: true
+        );
+
+        // Передаём в шаблон
+        return view('webmaster.link', compact('link'));
     }
 
     // === Мои подписки ===

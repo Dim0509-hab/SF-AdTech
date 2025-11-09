@@ -19,8 +19,11 @@ Route::get('/', function () {
 // Авторизация
 require __DIR__ . '/auth.php';
 
-// Редирект по токену
-Route::get('/r/{token}', [RedirectController::class, 'redirect'])->name('redirect');
+// Короткие ссылки /r/abc123
+Route::get('/r/{token}', [RedirectController::class, 'handle'])
+    ->name('redirect.handle')
+    ->where('token', '[a-zA-Z0-9+/=]+'); // base64-safe;
+
 
 // === Авторизованные пользователи ===
 Route::middleware(['auth'])->group(function () {
@@ -38,7 +41,6 @@ Route::middleware(['auth'])->group(function () {
             return redirect()->route('webmaster.offers');
         }
     })->name('dashboard');
-
 
 
     // === Рекламодатель ===
@@ -75,9 +77,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{offerId}/unsubscribe', [WebmasterController::class, 'unsubscribe'])
             ->name('webmaster.offers.unsubscribe');
 
-        // Генерация ссылки
-        Route::get('/{offerId}/link', [WebmasterController::class, 'getLink'])
+         // Генерация ссылки для веб-мастера
+        Route::get('/offers/{offerId}/link', [WebmasterController::class, 'getLink'])
             ->name('webmaster.offers.link');
+
 
             // Общая статистика
         Route::get('/stats', [WebmasterController::class, 'stats'])
@@ -120,5 +123,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/revenue/export', [AdminStatsController::class, 'export'])
         ->name('admin.revenue.export');
     });
+
+
 
 });
