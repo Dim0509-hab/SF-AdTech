@@ -21,11 +21,15 @@ use Illuminate\Database\Eloquent\Model;
 class Role extends Model
 {
 
+     // Указываем полное имя таблицы: схема + таблица
+    protected $table = 'sf_adtech.roles';
+
     // Разрешённые для заполнения поля
     protected $fillable = [
         'name',
         'description',
     ];
+
 
     // Связь: одна роль → много пользователей
     public function users()

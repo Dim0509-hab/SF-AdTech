@@ -53,22 +53,26 @@ class User extends Authenticatable
     const ROLE_ADVERTISER = 'advertiser';
     const ROLE_WEBMASTER = 'webmaster';
 
+    protected $table = 'sf_adtech.users';
+
+    // ✅ ДОБАВЛЯЕМ role_id В fillable
     protected $fillable = [
         'name',
-    'email',
-    'password',
-    'role',
-    'status',
-    'active',
-    'balance',
-    'hold',
-    'payment_method',
-    'payout_details',
-    'api_token',
-    'referral_code',
-    'registered_ip',
-    'user_agent',
-    'referrer_id',
+        'email',
+        'password',
+        'role',
+        'role_id', // ✅ ДОБАВЛЕНО!
+        'status',
+        'active',
+        'balance',
+        'hold',
+        'payment_method',
+        'payout_details',
+        'api_token',
+        'referral_code',
+        'registered_ip',
+        'user_agent',
+        'referrer_id',
     ];
 
     protected $hidden = [
@@ -76,9 +80,7 @@ class User extends Authenticatable
         'remember_token'
     ];
 
-
-
-public function offers(): BelongsToMany
+    public function offers(): BelongsToMany
     {
         return $this->belongsToMany(
             \App\Models\Offer::class,     // модель
@@ -95,9 +97,6 @@ public function offers(): BelongsToMany
         ->withTimestamps()
         ->as('subscription'); // теперь $offer->subscription->cost_per_click
     }
-
-
-
         // Скоупы для удобства
     public function scopePending($query)
     {
@@ -108,7 +107,6 @@ public function offers(): BelongsToMany
     {
         return $query->where('status', 'approved');
     }
-
 
     public function clicks()
     {
@@ -138,14 +136,14 @@ public function offers(): BelongsToMany
     }
 
 
-    public function isWebmaster(): bool
-{
-    return $this->role === 'webmaster' && $this->status === 'approved';
-}
-public function isApproved(): bool
-{
-    return $this->status === 'approved';
-}
+        public function isWebmaster(): bool
+    {
+        return $this->role === 'webmaster' && $this->status === 'approved';
+    }
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
 
     // Проверка активности пользователя
     public function isActive()
@@ -181,4 +179,9 @@ public function isApproved(): bool
             ]);
         }
     }
+        public function roleRelation()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
 }

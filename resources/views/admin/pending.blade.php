@@ -76,11 +76,25 @@
                                             <p class="text-xs text-secondary mb-0">{{ $user->email }}</p>
                                         </td>
                                         <td>
-                                            <span class="badge bg-gradient-info">{{ ucfirst($user->role) }}</span>
+                                            @if($user->roleRelation)
+                                                <div class="text-sm">
+                                                    <span class="badge bg-gradient-{{ $user->roleRelation->name === 'webmaster' ? 'info' : 'success' }} mb-1">
+                                                        <i class="fas fa-{{ $user->roleRelation->name === 'webmaster' ? 'laptop' : 'bullhorn' }} me-1"></i>
+                                                        {{ ucfirst($user->roleRelation->name) }}
+                                                    </span>
+                                                    @if($user->roleRelation->description)
+                                                        <small class="text-muted d-block">
+                                                            {{ $user->roleRelation->description }}
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="text-xs text-warning">—</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <span class="text-xs text-secondary mb-0">
-                                                {{ $user->created_at ? $user->created_at->format('d.m') : '—' }}
+                                                {{ $user->created_at ? $user->created_at->format('d.m.Y') : '—' }}
                                             </span>
                                         </td>
                                         <td class="align-middle">

@@ -47,7 +47,6 @@
                 @endswitch
             </strong>
         </p>
-
         <!-- Карточки метрик -->
         @if($stats)
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
@@ -65,8 +64,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <!-- Клики -->
                 <div class="col">
                     <div class="card border-success shadow-sm h-100">
@@ -81,8 +78,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <!-- Конверсии -->
                 <div class="col">
                     <div class="card border-warning shadow-sm h-100">
@@ -97,7 +92,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Доход -->
                 <div class="col">
                     <div class="card border-danger shadow-sm h-100">
@@ -113,7 +107,6 @@
                     </div>
                 </div>
             </div>
-
                     <!-- Детализация показателей -->
         <div class="row">
             <div class="col-12">
@@ -177,11 +170,7 @@
                 </div>
             </div>
         </div>
-
-
-
         @endif
-
         <!-- Кнопка возврата -->
         <div class="row mt-4">
             <div class="col-12 text-center">

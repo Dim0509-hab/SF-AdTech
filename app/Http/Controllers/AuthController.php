@@ -20,29 +20,53 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email|max:255',
-            'password' => 'required|min:6',
-            'role' => 'required|in:advertiser,webmaster',
-        ]);
+  public function register(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email|max:255',
+        'password' => 'required|min:6',
+        'role' => 'required|in:advertiser,webmaster',
+    ]);
 
+    \Log::info('Начало регистрации', [
+        'role' => $validated['role']
+    ]);
+
+    try {
         $role = Role::where('name', $validated['role'])->firstOrFail();
 
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'active' => 1,
-            'role' => $validated['role'],
+        \Log::info('Роль найдена', [
             'role_id' => $role->id,
-            'status' => 'pending',
+            'role_name' => $role->name
         ]);
 
-        return redirect()->route('login')->with('message', 'Регистрация успешна Ваш аккаунт ожидает одобрения администратором.');
+    } catch (\Exception $e) {
+        \Log::error('Роль не найдена', [
+            'role' => $validated['role'],
+            'exception' => $e->getMessage()
+        ]);
+        throw $e; // пробрасываем ошибку, чтобы видеть
     }
+
+    User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'active' => 1,
+        'role' => $validated['role'],
+        'role_id' => $role->id,
+        'status' => 'pending',
+    ]);
+
+    \Log::info('Пользователь создан', [
+        'email' => $validated['email'],
+        'role_id' => $role->id
+    ]);
+
+    return redirect()->route('login')->with('message', 'Регистрация успешна. Ваш аккаунт ожидает одобрения.');
+}
+
 
     public function login(Request $request)
     {

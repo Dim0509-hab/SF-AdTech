@@ -40,18 +40,22 @@ class AdminStatsController extends Controller
         // 3. Средний чек
         $avgRevenue = $countConversions > 0 ? $totalRevenue / $countConversions : 0;
 
-        // 4. Доход по офферам (топ-5)
-        $revenueByOffer = Conversion::select(['offer_id', DB::raw('SUM(revenue) as total_revenue')])
+                    // 4. Доход по офферам (топ-5)
+            $revenueByOffer = Conversion::select([
+                'offer_id',
+                DB::raw('SUM(revenue) as total_revenue')
+            ])
             ->whereBetween('created_at', [$from, $to])
-            ->where('status', $status)
+            ->where('status', $status) // ✅ status нужен — это статус конверсии
             ->groupBy('offer_id')
             ->orderByDesc('total_revenue')
             ->limit(5)
-            ->with('offer:id,name') // только нужные поля
+            ->with('offer:id,name') // подтянем название оффера
             ->get();
 
+
         // 5. Доход по пользователям (топ-5)
-        $revenueByUser = Conversion::select(columns: ['user_id', DB::raw('SUM(revenue) as total_revenue')])
+        $revenueByUser = Conversion::select(['user_id', DB::raw('SUM(revenue) as total_revenue')])
             ->whereBetween('created_at', [$from, $to])
             ->where('status', $status)
             ->groupBy('user_id')
@@ -67,9 +71,10 @@ class AdminStatsController extends Controller
             ->orderBy('date', 'desc')
             ->get();
 
-        $uniqueLinks = Click::select(['offer_id', 'webmaster_id'])
-            ->distinct()
-            ->count();
+        $uniqueLinks = DB::table('clicks')
+            ->selectRaw('COUNT(DISTINCT offer_id, webmaster_id) as cnt')
+            ->value('cnt');
+
 
 
         // 8. Последние отказы
@@ -82,7 +87,8 @@ class AdminStatsController extends Controller
             'total_users' => User::count(),
             'active_users' => User::where('active', true)->count(),
             'total_offers' => Offer::count(),
-            'published_offers' => Offer::where('status', 'published')->count(),
+            'published_offers' => Offer::where('active', 1)->count(),
+
         ];
 
         return view('admin.revenue.index', compact(
