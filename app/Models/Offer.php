@@ -15,6 +15,8 @@ use App\Models\Subscription;
  * @property numeric $price
  * @property string $target_url
  * @property array<array-key, mixed>|null $themes
+ * @property \Illuminate\Support\Carbon|null $starts_at
+ * @property \Illuminate\Support\Carbon|null $ends_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property bool $active
@@ -68,6 +70,8 @@ class Offer extends Model
         'themes' => 'array',
         'price' => 'decimal:2',
         'active' => 'boolean',
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
     ];
 
     // 💼 Связь с рекламодателем
@@ -86,6 +90,14 @@ class Offer extends Model
             'webmaster_id'
         )->withPivot('cost_per_click', 'agreed_price', 'status');
     }
+        public function isActive(): bool
+    {
+        // Проверяем поле `active` (1 = активен, 0 = неактивен)
+        return $this->active == 1
+            && (! $this->ends_at || $this->ends_at->isFuture())
+            && (! $this->starts_at || $this->starts_at->isPast());
+    }
+
 
     public function subscribers()
         {

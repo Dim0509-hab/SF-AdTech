@@ -1,13 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Offer;
-use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
-
 /**
  * Контроллер для административной панели SF-AdTech.
  * Управление пользователями, офферами и системной статистикой.
@@ -28,7 +24,6 @@ class AdminController extends Controller
             return $next($request);
         });
     }
-
     /**
      * Главная страница админки.
      */
@@ -42,7 +37,6 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact('userCount', 'offerCount', 'pendingCount'));
     }
-
     /**
      * Список всех пользователей (с пагинацией).
      */
@@ -51,7 +45,6 @@ class AdminController extends Controller
         $users = User::orderBy('id')->paginate(20);
         return view('admin.users', compact('users'));
     }
-
     /**
      * Список пользователей на модерации (по дате создания).
      */
@@ -64,7 +57,6 @@ class AdminController extends Controller
 
         return view('admin.pending', compact('pendingUsers'));
     }
-
     /**
      * Одобрить пользователя.
      */
@@ -104,7 +96,6 @@ class AdminController extends Controller
 
         return redirect()->back()->with('info', "❌ Пользователь «{$user->name}» отклонён.");
     }
-
     /**
      * Переключить активность пользователя (с защитой от self-block).
      */
@@ -122,7 +113,6 @@ class AdminController extends Controller
         $status = $user->active ? 'активирован' : 'заблокирован';
         return redirect()->back()->with('success', "Пользователь «{$user->name}» {$status}.");
     }
-
     /**
      * Список всех офферов.
      */
@@ -131,6 +121,5 @@ class AdminController extends Controller
         $offers = Offer::with('advertiser')->orderBy('id')->get();
         return view('admin.offers', compact('offers'));
     }
-
 
 }

@@ -104,7 +104,7 @@ class WebmasterController extends Controller
     // === Мои подписки ===
    public function subscribed()
 {
-    $offers = Auth::user()->offers() // ← не subscriptions(), а offers()
+    $offers = Auth::user()->offers()
         ->withCount([
             'clicks as today_clicks' => fn($q) => $q->where('created_at', '>=', now()->startOfDay()),
             'clicks as month_clicks' => fn($q) => $q->where('created_at', '>=', now()->startOfMonth()),
