@@ -11,6 +11,7 @@ class Kernel extends HttpKernel
      * Глобальные HTTP middleware для всех запросов
      */
     protected $middleware = [
+        \App\Http\Middleware\RealRequestTimer::class,
         \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,

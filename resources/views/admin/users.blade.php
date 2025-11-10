@@ -23,6 +23,7 @@
         </div>
     </div>
 
+
     <!-- Таблица пользователей -->
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-light">
@@ -42,14 +43,16 @@
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td>
-                    <form action="{{ route('admin.users.role', $user->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        <select name="role" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="advertiser" {{ $user->role === 'advertiser' ? 'selected' : '' }}>Рекламодатель</option>
-                            <option value="webmaster" {{ $user->role === 'webmaster' ? 'selected' : '' }}>Веб-мастер</option>
-                        </select>
-                    </form>
-                </td>
+    <form action="{{ route('admin.users.role', $user->id) }}" method="POST" class="d-flex align-items-center gap-2">
+        @csrf
+        <select name="role_id" class="form-select form-select-sm" style="width: auto;">
+            <option value="1" {{ $user->role_id == 1 ? 'selected' : '' }}>Рекламодатель</option>
+            <option value="2" {{ $user->role_id == 2 ? 'selected' : '' }}>Веб-мастер</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-primary">Сохранить</button>
+    </form>
+</td>
+
                 <td>
                     <span class="badge bg-{{ $user->active ? 'success' : 'danger' }}">
                         {{ $user->active ? 'Активен' : 'Заблокирован' }}
@@ -73,9 +76,14 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- Пагинация -->
+    <div class="d-flex justify-content-center">
+        {{ $users->links() }}
+    </div>
 </div>
 
-<!-- Модальные окна удаления (вне таблицы, в конце) -->
+<!-- Модальные окна удаления -->
 @foreach($users as $user)
 <div class="modal fade" id="deleteUserModal{{ $user->id }}" tabindex="-1" aria-labelledby="deleteUserLabel{{ $user->id }}" aria-hidden="true">
     <div class="modal-dialog">

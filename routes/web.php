@@ -59,7 +59,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
 
-
          // === Вебмастер ===
     Route::prefix('webmaster')->middleware(['auth'])->group(function () {
         // Главная: /webmaster/offers
@@ -86,8 +85,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/stats', [WebmasterController::class, 'stats'])
             ->name('webmaster.stats');
     });
-
-
 
 
     // === Администратор ===
@@ -123,6 +120,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/revenue/export', [AdminStatsController::class, 'export'])
         ->name('admin.revenue.export');
     });
+
+
+
+Route::get('/test-admin-log', function () {
+    \Log::channel('admin')->info("🔧 ТЕСТ: admin.log — " . now());
+    return '✅ Проверь storage/logs/admin.log';
+});
+
+
 
 
 
